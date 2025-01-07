@@ -1,3 +1,5 @@
+import { MobileSidebar } from "./MobileSidebar";
+
 const pathnameMap = {
   // tasks: {
   //   title: "My Tasks",
@@ -28,6 +30,7 @@ export const Navbar = () => {
         <h1 className="text-2xl font-semibold">{title}</h1>
         <p className="text-muted-foreground">{description}</p>
       </div>
+      <MobileSidebar />
     </nav>
   );
 };
