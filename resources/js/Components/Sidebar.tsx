@@ -1,5 +1,5 @@
 
-import { Navigation } from "./navigation";
+import { Navigation } from "./Navigation";
 import { DottedSeparator } from "./DottedSeparator";
 import { Link } from "@inertiajs/react";
 

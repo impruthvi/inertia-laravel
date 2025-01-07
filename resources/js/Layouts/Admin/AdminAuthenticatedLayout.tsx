@@ -1,4 +1,4 @@
-import { Navbar } from "@/Components/navbar";
+import { Navbar } from "@/Components/Navbar";
 import { Sidebar } from "@/Components/sidebar";
 import { PropsWithChildren, ReactNode } from "react";
 
