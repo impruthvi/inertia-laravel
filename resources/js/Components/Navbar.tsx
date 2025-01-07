@@ -1,4 +1,5 @@
 import { MobileSidebar } from "./MobileSidebar";
+import { UserButton } from "./UserButton";
 
 const pathnameMap = {
   // tasks: {
@@ -31,6 +32,7 @@ export const Navbar = () => {
         <p className="text-muted-foreground">{description}</p>
       </div>
       <MobileSidebar />
+      <UserButton />
     </nav>
   );
 };

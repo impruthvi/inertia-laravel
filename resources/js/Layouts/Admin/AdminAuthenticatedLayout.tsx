@@ -1,5 +1,5 @@
 import { Navbar } from "@/Components/Navbar";
-import { Sidebar } from "@/Components/sidebar";
+import { Sidebar } from "@/Components/Sidebar";
 import { PropsWithChildren, ReactNode } from "react";
 
 export default function AdminAuthenticated({
