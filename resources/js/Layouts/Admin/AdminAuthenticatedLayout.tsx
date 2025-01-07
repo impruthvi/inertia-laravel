@@ -3,10 +3,8 @@ import { Sidebar } from "@/Components/sidebar";
 import { PropsWithChildren, ReactNode } from "react";
 
 export default function AdminAuthenticated({
-    header,
     children,
-}: PropsWithChildren<{ header?: ReactNode }>) {
-
+}: PropsWithChildren<{ children: ReactNode }>) {
     return (
         <div className="min-h-screen">
             <div className="flex w-full h-full">
