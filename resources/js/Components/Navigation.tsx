@@ -25,7 +25,6 @@ export const Navigation = () => {
                                 href={route(item.route)}
                                 className="block"
                                 aria-current={isActive ? "page" : undefined}
-                                preserve-scroll
                             >
                                 <div
                                     className={cn(
