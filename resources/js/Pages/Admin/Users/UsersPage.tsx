@@ -12,7 +12,8 @@ import { useCreateUserModal } from "@/features/admin/users/components/hooks/use-
 
 export default function UsersPage({ users }: { users: PaginatedData<User> }) {
     const { open: createUser } = useCreateUserModal();
-    const { data, links } = users;
+
+    const { data, ...pagination } = users;
 
     return (
         <AdminAuthenticatedLayout>
@@ -35,7 +36,7 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
                         <DataTable
                             data={data ?? []}
                             columns={columns}
-                            links={links}
+                            pagination={pagination}
                         />
                     </div>
                 </div>

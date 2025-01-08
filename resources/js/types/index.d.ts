@@ -23,9 +23,14 @@ export type PaginatedData<T> = {
     per_page: number;
     to: number;
     total: number;
+    first_page_url: string;
+    last_page_url: string;
+    next_page_url: string;
+    prev_page_url: string;
 };
 interface PaginationItem {
     url: null | string;
     label: string;
     active: boolean;
-  }
+}
+export type Pagination = Omit<PaginatedData<unknown>, "data">;

@@ -1,13 +1,14 @@
-import { PaginationItem } from "@/types";
+import { PaginationItem, Pagination as PaginationType } from "@/types";
 import { Button } from "./ui/button";
 import { MoreHorizontal, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { router } from "@inertiajs/react";
 
 interface PaginationProps {
-    links: PaginationItem[];
+    pagination: PaginationType;
 }
 
-const Pagination = ({ links }: PaginationProps) => {
+const Pagination = ({ pagination }: PaginationProps) => {
+    const { links, from, to, total, prev_page_url, next_page_url } = pagination;
     if (!links || links.length === 0) return null;
 
     const handlePageChange = (url: string | null) => {
@@ -19,10 +20,6 @@ const Pagination = ({ links }: PaginationProps) => {
             });
         }
     };
-
-    // Find previous and next links
-    const prevLink = links.find((link) => link.label.includes("Previous"));
-    const nextLink = links.find((link) => link.label.includes("Next"));
 
     // Get numbered pages (exclude prev/next links)
     const numberLinks = links.filter(
@@ -78,84 +75,98 @@ const Pagination = ({ links }: PaginationProps) => {
     const lastPage = numberLinks[numberLinks.length - 1];
 
     return (
-        <div className="flex items-center justify-end space-x-2 py-4">
-            {/* First page button */}
-            <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                    firstPage?.url && handlePageChange(firstPage.url)
-                }
-                disabled={firstPage?.active}
-                className="select-none"
-            >
-                <ChevronsLeft className="h-4 w-4" />
-            </Button>
-
-            {/* Previous button */}
-            <Button
-                variant="outline"
-                size="sm"
-                onClick={() => prevLink?.url && handlePageChange(prevLink.url)}
-                disabled={!prevLink?.url}
-                className="select-none"
-            >
-                Previous
-            </Button>
-
-            {/* Numbered pages with ellipsis */}
-            <div className="flex items-center space-x-1">
-                {renderPageNumbers().map((item, index) => {
-                    if (item === "ellipsis1" || item === "ellipsis2") {
-                        return (
-                            <div
-                                key={`ellipsis-${item}`}
-                                className="w-8 flex justify-center items-center"
-                            >
-                                <MoreHorizontal className="h-4 w-4" />
-                            </div>
-                        );
-                    }
-
-                    const link = item as PaginationItem;
-                    return (
-                        <Button
-                            key={index}
-                            variant={link.active ? "primary" : "outline"}
-                            size="sm"
-                            onClick={() =>
-                                link.url && handlePageChange(link.url)
-                            }
-                            disabled={link.active}
-                            className="min-w-[32px] select-none"
-                        >
-                            {link.label}
-                        </Button>
-                    );
-                })}
+        <div className="flex items-center justify-between py-4">
+            {/* Results summary */}
+            <div className="text-sm text-gray-500">
+                Showing {from} to {to} of {total} results
             </div>
 
-            {/* Next button */}
-            <Button
-                variant="outline"
-                size="sm"
-                onClick={() => nextLink?.url && handlePageChange(nextLink.url)}
-                disabled={!nextLink?.url}
-                className="select-none"
-            >
-                Next
-            </Button>
+            {/* Pagination controls */}
+            <div className="flex items-center space-x-2">
+                {/* First page button */}
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                        firstPage?.url && handlePageChange(firstPage.url)
+                    }
+                    disabled={firstPage?.active}
+                    className="select-none"
+                >
+                    <ChevronsLeft className="h-4 w-4" />
+                </Button>
 
-            {/* Last page button */}
-            <Button
-                variant="outline"
-                size="sm"
-                onClick={() => lastPage?.url && handlePageChange(lastPage.url)}
-                disabled={lastPage?.active}
-                className="select-none"
-            >
-                <ChevronsRight className="h-4 w-4" />
-            </Button>
+                {/* Previous button */}
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                        prev_page_url && handlePageChange(prev_page_url)
+                    }
+                    disabled={!prev_page_url}
+                    className="select-none"
+                >
+                    Previous
+                </Button>
+
+                {/* Numbered pages with ellipsis */}
+                <div className="flex items-center space-x-1">
+                    {renderPageNumbers().map((item, index) => {
+                        if (item === "ellipsis1" || item === "ellipsis2") {
+                            return (
+                                <div
+                                    key={`ellipsis-${item}`}
+                                    className="w-8 flex justify-center items-center"
+                                >
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </div>
+                            );
+                        }
+
+                        const link = item as PaginationItem;
+                        return (
+                            <Button
+                                key={index}
+                                variant={link.active ? "primary" : "outline"}
+                                size="sm"
+                                onClick={() =>
+                                    link.url && handlePageChange(link.url)
+                                }
+                                disabled={link.active}
+                                className="min-w-[32px] select-none"
+                            >
+                                {link.label}
+                            </Button>
+                        );
+                    })}
+                </div>
+
+                {/* Next button */}
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                        next_page_url && handlePageChange(next_page_url)
+                    }
+                    disabled={!next_page_url}
+                    className="select-none"
+                >
+                    Next
+                </Button>
+
+                {/* Last page button */}
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                        lastPage?.url && handlePageChange(lastPage.url)
+                    }
+                    disabled={lastPage?.active}
+                    className="select-none"
+                >
+                    <ChevronsRight className="h-4 w-4" />
+                </Button>
+            </div>
         </div>
     );
 };

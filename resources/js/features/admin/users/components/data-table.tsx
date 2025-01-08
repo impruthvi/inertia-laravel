@@ -20,21 +20,20 @@ import {
     TableHeader,
     TableRow,
 } from "@/Components/ui/table";
-import { PaginationItem } from "@/types";
+import { Pagination as PaginationType } from "@/types";
 import Pagination from "@/Components/Pagination";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    links: PaginationItem[];
+    pagination: PaginationType;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
-    links,
+    pagination,
 }: DataTableProps<TData, TValue>) {
-    console.log(links);
 
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
@@ -109,7 +108,7 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-            <Pagination links={links} />
+            <Pagination pagination={pagination} />
         </div>
     );
 }
