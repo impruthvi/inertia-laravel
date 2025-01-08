@@ -8,8 +8,10 @@ import { DottedSeparator } from "@/Components/DottedSeparator";
 import AdminAuthenticatedLayout from "@/Layouts/Admin/AdminAuthenticatedLayout";
 import { DataTable } from "@/features/admin/users/components/data-table";
 import { columns } from "@/features/admin/users/components/columns";
+import { useCreateUserModal } from "@/features/admin/users/components/hooks/use-create-user-modal";
 
 export default function UsersPage({ users }: { users: PaginatedData<User> }) {
+    const { open: createUser } = useCreateUserModal();
     const { data, links } = users;
 
     return (
@@ -23,7 +25,7 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
                             <Button
                                 className="w-full lg:w-auto"
                                 size="sm"
-                                onClick={() => {}}
+                                onClick={createUser}
                             >
                                 <PlusIcon className="size-4 mr-2" />
                                 New
