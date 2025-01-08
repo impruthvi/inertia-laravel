@@ -7,7 +7,7 @@ import {
     DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
 import { DottedSeparator } from "@/Components/DottedSeparator";
-import { usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 
 export const UserButton = () => {
     const user = usePage().props.auth?.user;
@@ -61,7 +61,7 @@ export const UserButton = () => {
                 </div>
                 <DottedSeparator className="mb-1" />
                 <DropdownMenuItem
-                    onClick={() => route("admin.logout")}
+                    onClick={() =>  router.post(route("admin.logout"))}
                     className="h-10 flex items-center justify-center text-amber-700 font-medium cursor-pointer"
                 >
                     <LogOut className="size-4 mr-2" />
