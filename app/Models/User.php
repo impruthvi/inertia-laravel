@@ -12,6 +12,8 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    public const USER_DEFAULT_PASSWORD = 'User@123';
+
     /**
      * The attributes that are mass assignable.
      *

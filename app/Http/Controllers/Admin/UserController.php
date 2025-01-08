@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\User\CreateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -32,9 +33,18 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateUserRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        // create user
+        User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => generatePassword(User::USER_DEFAULT_PASSWORD),
+        ]);
+
+        return redirect()->back()->with('success', 'User created successfully');
     }
 
     /**
