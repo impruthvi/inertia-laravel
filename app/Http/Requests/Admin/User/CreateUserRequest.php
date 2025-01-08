@@ -23,7 +23,7 @@ class CreateUserRequest extends FormRequest
     {
         return [
             "name" => ["required", "string", "max:255", 'min:3'],
-            "email" => ["required", "string", "lowercase", "email", "max:255", "unique:admins"],
+            "email" => ["required", "string", "lowercase", "email", "max:255", "unique:users"],
         ];
     }
 }
