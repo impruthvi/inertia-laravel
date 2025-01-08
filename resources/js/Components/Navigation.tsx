@@ -1,5 +1,6 @@
 import { cn, isRouteActive } from "@/lib/utils";
 import { Link } from "@inertiajs/react";
+import { UserIcon } from "lucide-react";
 import { GoHome, GoHomeFill } from "react-icons/go";
 
 const routes = [
@@ -8,6 +9,12 @@ const routes = [
         route: "admin.dashboard",
         icon: GoHome,
         activeIcon: GoHomeFill,
+    },
+    {
+        label: "Users",
+        route: "admin.users.index",
+        icon: UserIcon,
+        activeIcon: UserIcon,
     },
 ];
 
