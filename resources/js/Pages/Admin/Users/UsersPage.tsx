@@ -32,7 +32,11 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
                             </Button>
                         </div>
                         <DottedSeparator className="my-4" />
-                        <DataTable data={data ?? []} columns={columns} />
+                        <DataTable
+                            data={data ?? []}
+                            columns={columns}
+                            links={links}
+                        />
                     </div>
                 </div>
             </div>

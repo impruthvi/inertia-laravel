@@ -15,13 +15,7 @@ export type PageProps<
 
 export type PaginatedData<T> = {
     data: T[];
-    links: {
-        first: string;
-        last: string;
-        prev: string | null;
-        next: string | null;
-    };
-
+    links: PaginationItem[];
     current_page: number;
     from: number;
     last_page: number;
@@ -30,3 +24,8 @@ export type PaginatedData<T> = {
     to: number;
     total: number;
 };
+interface PaginationItem {
+    url: null | string;
+    label: string;
+    active: boolean;
+  }

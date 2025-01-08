@@ -9,7 +9,6 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     useReactTable,
-    getPaginationRowModel,
     getSortedRowModel,
 } from "@tanstack/react-table";
 
@@ -21,17 +20,22 @@ import {
     TableHeader,
     TableRow,
 } from "@/Components/ui/table";
-import { Button } from "@/Components/ui/button";
+import { PaginationItem } from "@/types";
+import Pagination from "@/Components/Pagination";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    links: PaginationItem[];
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    links,
 }: DataTableProps<TData, TValue>) {
+    console.log(links);
+
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
         React.useState<ColumnFiltersState>([]);
@@ -40,7 +44,6 @@ export function DataTable<TData, TValue>({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
         onColumnFiltersChange: setColumnFilters,
@@ -106,24 +109,7 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                >
-                    Previous
-                </Button>
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                >
-                    Next
-                </Button>
-            </div>
+            <Pagination links={links} />
         </div>
     );
 }
