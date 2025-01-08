@@ -1,26 +1,26 @@
 <?php
 
+use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AuthAuthenticatedSessionController;
 use App\Http\Controllers\Admin\Auth\RegisteredAdminController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::prefix('admin')->middleware('guest:admin')->group(function () {
+Route::prefix('admin')->middleware('guest:admin')->as('admin.')->group(function () {
 
-    Route::get('register', [RegisteredAdminController::class, 'create'])->name('admin.register');
+    Route::get('register', [RegisteredAdminController::class, 'create'])->name('register');
     Route::post('register', [RegisteredAdminController::class, 'store']);
 
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('admin.login');
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::get('login', [AuthAuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('login', [AuthAuthenticatedSessionController::class, 'store'])->name('login');
 
 });
 
-Route::prefix('admin')->middleware('auth:admin')->group(function () {
+Route::prefix('admin')->middleware('auth:admin')->as('admin.')->group(function () {
 
     Route::get('/dashboard', function () {
         return Inertia::render('Admin/Dashboard');
-    })->name('admin.dashboard');
+    })->name('dashboard');
 
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('admin.logout');
+    Route::post('logout', [AuthAuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 });
