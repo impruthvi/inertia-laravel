@@ -11,6 +11,12 @@ export type PageProps<
     auth: {
         user: User;
     };
+    ziggy: {
+        location: string;
+        query: {
+            [key: string]: string | string[] | object | undefined;
+        };
+    };
 };
 
 export type PaginatedData<T> = {

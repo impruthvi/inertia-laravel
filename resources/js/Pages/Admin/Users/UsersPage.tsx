@@ -1,4 +1,4 @@
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { PlusIcon } from "lucide-react";
 
 import { PaginatedData, User } from "@/types";
@@ -20,10 +20,11 @@ type Filter = {
 
 export default function UsersPage({ users }: { users: PaginatedData<User> }) {
     const { open: createUser } = useCreateUserModal();
+    const { query } = usePage().props.ziggy;
 
     const [filter, setFilter] = useState<Filter>({
-        search: "",
-        sort: [],
+        search: (query.search as string) ?? "",
+        sort: Array.isArray(query.sort) ? query.sort : [],
     });
 
     const { data, ...pagination } = users;
@@ -90,6 +91,7 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
                                     type="text"
                                     placeholder="Search users"
                                     onChange={handleSearchChange}
+                                    value={filter.search}
                                 />
                             </div>
                             <Button
