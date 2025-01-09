@@ -13,14 +13,26 @@ import { SortingState } from "@tanstack/react-table";
 import { Input } from "@headlessui/react";
 import { useState } from "react";
 
+type Filter = {
+    search: string;
+    sort: { id: string; desc: boolean }[];
+};
+
 export default function UsersPage({ users }: { users: PaginatedData<User> }) {
     const { open: createUser } = useCreateUserModal();
-    const [search, setSearch] = useState("");
-    const [sorting, setSorting] = useState<SortingState>([]);
+
+    const [filter, setFilter] = useState<Filter>({
+        search: "",
+        sort: [],
+    });
 
     const { data, ...pagination } = users;
     const handleSortChange = (sorting: SortingState) => {
-        setSorting(sorting);
+        setFilter((prev) => ({
+            ...prev,
+            sort: sorting,
+        }));
+
         // Handle sorting changes here, e.g., make API calls
         const params = sorting.reduce((acc, curr) => {
             acc[`sort[${curr.id}]`] = curr.desc ? "desc" : "asc";
@@ -28,8 +40,8 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
         }, {} as Record<string, string>);
 
         // Include search in the parameters
-        if (search) {
-            params.search = search;
+        if (filter.search) {
+            params.search = filter.search;
         }
 
         // Make API call here
@@ -42,14 +54,21 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         // Handle search changes here, e.g., make API calls
         const searchValue = e.target.value;
-        setSearch(searchValue);
+        setFilter((prev) => ({
+            ...prev,
+            search: searchValue,
+        }));
         const params: Record<string, string> = { search: searchValue };
 
         // Include sorting in the parameters
-        if (sorting.length > 0) {
-            sorting.forEach((sort) => {
+        if (filter.sort.length > 0) {
+            filter.sort.forEach((sort) => {
                 params[`sort[${sort.id}]`] = sort.desc ? "desc" : "asc";
             });
+        }
+
+        if (!searchValue) {
+            delete params.search;
         }
 
         // Make API call here
