@@ -27,15 +27,18 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     pagination: PaginationType;
+    defaultSort?: SortingState;
+    onSortChange?: (sorting: SortingState) => void;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
     pagination,
+    defaultSort = [{ id: "created_at", desc: true }],
+    onSortChange,
 }: DataTableProps<TData, TValue>) {
-
-    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [sorting, setSorting] = React.useState<SortingState>(defaultSort);
     const [columnFilters, setColumnFilters] =
         React.useState<ColumnFiltersState>([]);
 
@@ -43,16 +46,20 @@ export function DataTable<TData, TValue>({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         pageCount: pagination.total,
         manualPagination: true,
-        state: {
-            sorting,
-            columnFilters,
+        manualSorting: true,
+        onSortingChange: (updater) => {
+            const newSorting =
+                typeof updater === "function" ? updater(sorting) : updater;
+            setSorting(newSorting);
+            onSortChange?.(newSorting);
         },
+
+        state: { sorting, columnFilters },
     });
 
     return (

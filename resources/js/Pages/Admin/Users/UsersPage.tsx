@@ -1,4 +1,4 @@
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import { PlusIcon } from "lucide-react";
 
 import { PaginatedData, User } from "@/types";
@@ -9,11 +9,25 @@ import AdminAuthenticatedLayout from "@/Layouts/Admin/AdminAuthenticatedLayout";
 import { DataTable } from "@/features/admin/users/components/data-table";
 import { columns } from "@/features/admin/users/components/columns";
 import { useCreateUserModal } from "@/features/admin/users/components/hooks/use-create-user-modal";
+import { SortingState } from "@tanstack/react-table";
 
 export default function UsersPage({ users }: { users: PaginatedData<User> }) {
     const { open: createUser } = useCreateUserModal();
 
     const { data, ...pagination } = users;
+    const handleSortChange = (sorting: SortingState) => {
+        // Handle sorting changes here, e.g., make API calls
+        const params = sorting.reduce((acc, curr) => {
+            acc[`sort[${curr.id}]`] = curr.desc ? "desc" : "asc";
+            return acc;
+        }, {} as Record<string, string>);
+
+        // Make API call here
+        router.get(route("admin.users.index"), params, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };    
 
     return (
         <AdminAuthenticatedLayout>
@@ -37,6 +51,7 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
                             data={data ?? []}
                             columns={columns}
                             pagination={pagination}
+                            onSortChange={handleSortChange}
                         />
                     </div>
                 </div>
