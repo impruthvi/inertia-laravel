@@ -1,30 +1,36 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 
 /**
- * A custom hook that debounces a value and optionally triggers a callback.
- * @param value The value to debounce.
- * @param delay The debounce delay in milliseconds (default: 500ms).
- * @param callback Optional callback to invoke after the debounce delay.
+ * Custom hook that debounces a value by a specified delay.
+ *
+ * @param value - The value to be debounced.
+ * @param delay - The debounce delay in milliseconds. Default is 500ms.
+ * @param callback - Optional callback function to be executed after the debounce delay.
  * @returns The debounced value.
+ *
+ * @example
+ * const debouncedSearchTerm = useDebounce(searchTerm, 300);
  */
-export default function useDebounce<T>(
-    value: T,
-    delay: number = 500,
-    callback?: (value: T) => void
+export default function useDebounce(
+    value: string,
+    delay = 500,
+    callback?: (value: string) => void,
 ) {
-    const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-    const executeCallback = useCallback(() => {
-        if (callback) {
-            callback(value);
-        }
-        setDebouncedValue(value);
-    }, [value, callback]);
+    const [debouncedValue, setDebouncedValue] = useState(value);
 
     useEffect(() => {
-        const id = setTimeout(executeCallback, delay);
-        return () => clearTimeout(id);
-    }, [value, delay, executeCallback]);
+        const id = setTimeout(() => {
+            if (callback && typeof callback === "function") {
+                callback(value);
+            }
+
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(id);
+        };
+    }, [value, delay]);
 
     return debouncedValue;
 }
