@@ -19,7 +19,7 @@ export const EditUserWrapper = ({ onCancel, id }: EditUserWrapperProps) => {
 
     if (isLoading) {
         return (
-            <Card className="w-full h-[714px] border-none shadow-none">
+            <Card className="w-full h-[400px] border-none shadow-none">
                 <CardContent className="flex items-center justify-center h-full">
                     <Loader className="size-5 animate-spin text-muted-foreground" />
                 </CardContent>
