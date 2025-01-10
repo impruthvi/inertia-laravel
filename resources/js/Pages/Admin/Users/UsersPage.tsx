@@ -8,7 +8,7 @@ import { DottedSeparator } from "@/Components/DottedSeparator";
 import AdminAuthenticatedLayout from "@/Layouts/Admin/AdminAuthenticatedLayout";
 import { DataTable } from "@/features/admin/users/components/data-table";
 import { columns } from "@/features/admin/users/components/columns";
-import { useCreateUserModal } from "@/features/admin/users/components/hooks/use-create-user-modal";
+import { useCreateUserModal } from "@/features/admin/users/hooks/use-create-user-modal";
 import { SortingState } from "@tanstack/react-table";
 import { useState } from "react";
 import useDebounce from "@/hooks/useDebounce";

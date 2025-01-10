@@ -13,7 +13,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
-import { useEditUserModal } from "./hooks/use-edit-user-modal";
+import { useEditUserModal } from "../hooks/use-edit-user-modal";
 
 interface TaskActionsProps {
     id: number;
