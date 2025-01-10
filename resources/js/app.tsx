@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { createRoot } from "react-dom/client";
+import { Toaster } from "@/Components/ui/sonner"
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -26,6 +27,7 @@ createInertiaApp({
             <QueryClientProvider client={queryClient}>
                 <NuqsAdapter>
                     <App {...props} />
+                    <Toaster />
                 </NuqsAdapter>
             </QueryClientProvider>
         );
