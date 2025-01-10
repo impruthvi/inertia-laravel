@@ -21,6 +21,7 @@ type Filter = {
 export default function UsersPage({ users }: { users: PaginatedData<User> }) {
     const { open: createUser } = useCreateUserModal();
     const { query } = usePage().props.ziggy;
+    const currentPage = Number(query.page) || 1;
 
     // Initialize filters from URL query parameters
     const [filter, setFilter] = useState<Filter>({
@@ -32,7 +33,7 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
     });
 
     // Helper function to build URL parameters from current filters
-    const buildParams = (currentFilter: Filter) => {
+    const buildParams = (currentFilter: Filter, preservePage = true) => {
         const params: Record<string, string> = {};
 
         if (currentFilter.search) {
@@ -43,9 +44,9 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
             params[`sort[${sort.id}]`] = sort.desc ? "desc" : "asc";
         });
 
-        // Keep the current page from URL if it exists
-        if (query.page) {
-            params.page = query.page as string;
+        // Always preserve the current page unless explicitly told not to
+        if (preservePage && currentPage > 1) {
+            params.page = currentPage.toString();
         }
 
         return params;
@@ -63,15 +64,14 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
     const handleSortChange = (sorting: SortingState) => {
         const newFilter = { ...filter, sort: sorting };
         setFilter(newFilter);
+        // Preserve page on sort
         updateRoute(buildParams(newFilter));
     };
 
     // Handle search changes (debounced)
     const handleSearchChange = () => {
-        const params = buildParams(filter);
-        // Reset page when searching
-        delete params.page;
-        updateRoute(params);
+        // Don't preserve page on search - reset to page 1
+        updateRoute(buildParams(filter, false));
     };
 
     useDebounce(filter.search, 500, handleSearchChange);
