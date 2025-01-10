@@ -10,9 +10,9 @@ import { DataTable } from "@/features/admin/users/components/data-table";
 import { columns } from "@/features/admin/users/components/columns";
 import { useCreateUserModal } from "@/features/admin/users/components/hooks/use-create-user-modal";
 import { SortingState } from "@tanstack/react-table";
-import { Input } from "@headlessui/react";
 import { useState } from "react";
 import useDebounce from "@/hooks/useDebounce";
+import TextInput from "@/Components/TextInput";
 
 type Filter = {
     search: string;
@@ -85,9 +85,10 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
                     <div className="h-full flex flex-col overflow-auto p-4">
                         <div className="flex flex-col gap-y-2 lg:flex-row justify-between items-center">
                             <div className="w-full lg:w-auto">
-                                <Input
+                                <TextInput
                                     type="text"
-                                    placeholder="Search users"
+                                    placeholder="Search ..."
+                                    className="mt-1 block w-full"
                                     onChange={(e) => {
                                         setFilter((prev) => ({
                                             ...prev,
