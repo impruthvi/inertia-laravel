@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Custom hook that debounces a value by a specified delay.
@@ -9,7 +9,9 @@ import { useEffect, useState } from "react";
  * @returns The debounced value.
  *
  * @example
- * const debouncedSearchTerm = useDebounce(searchTerm, 300);
+ * const debouncedSearchTerm = useDebounce(searchTerm, 300, (value) => {
+ *   console.log("Debounced value:", value);
+ * });
  */
 export default function useDebounce(
     value: string,
@@ -17,14 +19,21 @@ export default function useDebounce(
     callback?: (value: string) => void,
 ) {
     const [debouncedValue, setDebouncedValue] = useState(value);
+    const isInitialRender = useRef(true);
 
     useEffect(() => {
+        // Skip callback execution on the initial render
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+            return;
+        }
+
         const id = setTimeout(() => {
+            setDebouncedValue(value);
+
             if (callback && typeof callback === "function") {
                 callback(value);
             }
-
-            setDebouncedValue(value);
         }, delay);
 
         return () => {
