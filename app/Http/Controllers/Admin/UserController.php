@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\CreateUserRequest;
+use App\Interfaces\UserInterface;
 use App\Models\User;
-use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,7 +13,7 @@ use Inertia\Response;
 class UserController extends Controller
 {
     public function __construct(
-        protected UserRepository $userRepository
+        protected UserInterface $userInterface
     ) {}
 
     /**
@@ -32,7 +32,7 @@ class UserController extends Controller
         ];
 
         // Paginate results and preserve query parameters
-        $users = $this->userRepository->get(
+        $users = $this->userInterface->get(
             select: ['name', 'email', 'created_at'],
             filters: $filters,
             paginate: true
