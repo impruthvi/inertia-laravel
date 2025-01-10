@@ -5,12 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\CreateUserRequest;
 use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class UserController extends Controller
 {
+    public function __construct(
+        protected UserRepository $userRepository
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -20,35 +25,22 @@ class UserController extends Controller
         $search = $request->input('search');
         $sortArray = $request->input('sort', []);
 
-        // Define allowed fields for sorting
-        $allowedSortFields = ['name', 'email', 'created_at'];
-        $allowedSortDirections = ['asc', 'desc'];
-
-        // Start building the query
-        $query = User::query();
-
         // Apply search filter
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('email', 'like', '%' . $search . '%');
-            });
-        }
-
-        // Apply sorting
-        foreach ($sortArray as $field => $direction) {
-            if (in_array($field, $allowedSortFields) && in_array(strtolower($direction), $allowedSortDirections)) {
-                $query->orderBy($field, $direction);
-            }
-        }
+        $filters = [
+            'search' => $search,
+            'sort' => $sortArray,
+        ];
 
         // Paginate results and preserve query parameters
-        $users = $query->paginate(10)->appends($request->all());
+        $users = $this->userRepository->get(
+            select: ['name', 'email', 'created_at'],
+            filters: $filters,
+            paginate: true
+        );
 
         // Return response
         return Inertia::render('Admin/Users/UsersPage', [
             'users' => $users,
-            'sort' => $sortArray,
         ]);
     }
 
