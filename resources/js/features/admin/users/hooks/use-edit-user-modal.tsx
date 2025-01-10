@@ -1,9 +1,9 @@
-import { useQueryState, parseAsInteger} from "nuqs";
+import { useQueryState, parseAsString} from "nuqs";
 
 export const useEditUserModal = () => {
-    const [userId, setUserId] = useQueryState("edit-user", parseAsInteger);
+    const [userId, setUserId] = useQueryState("edit-user", parseAsString);
 
-    const open = (id: number) => setUserId(id);
+    const open = (id: string) => setUserId(id);
     const close = () => setUserId(null);
 
     return {

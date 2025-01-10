@@ -16,7 +16,7 @@ import {
 import { useEditUserModal } from "../hooks/use-edit-user-modal";
 
 interface TaskActionsProps {
-    id: number;
+    id: string;
     children: React.ReactNode;
 }
 

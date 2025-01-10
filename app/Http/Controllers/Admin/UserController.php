@@ -84,7 +84,7 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return response()->json(['error' => false, 'data' => User::find($id)]); 
     }
 
     /**
@@ -92,7 +92,13 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $user = User::find($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->save();
+
+        // return response()->json(['error' => false, 'data' => $user]);
+        return redirect()->back()->with('success', 'User Updated successfully');
     }
 
     /**
