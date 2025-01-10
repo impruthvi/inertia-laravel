@@ -65,7 +65,7 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
         const newFilter = { ...filter, sort: sorting };
         setFilter(newFilter);
         // Preserve page on sort
-        updateRoute(buildParams(newFilter));
+        updateRoute(buildParams(newFilter, false));
     };
 
     // Handle search changes (debounced)
