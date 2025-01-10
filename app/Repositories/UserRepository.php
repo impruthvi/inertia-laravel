@@ -22,7 +22,7 @@ class UserRepository implements UserInterface
      * 
      * @return LengthAwarePaginator|Collection|null The paginated collection of users or a collection of users.
      */
-    public function get(array $select = ['name', 'email', 'created_at'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null
+    public function get(array $select = ['id', 'name', 'email', 'created_at'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null
     {
         // Start building the query
         $query = User::select($select);

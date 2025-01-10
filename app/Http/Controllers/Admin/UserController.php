@@ -33,7 +33,7 @@ class UserController extends Controller
 
         // Paginate results and preserve query parameters
         $users = $this->userInterface->get(
-            select: ['name', 'email', 'created_at'],
+            select: ['id', 'name', 'email', 'created_at'],
             filters: $filters,
             paginate: true
         );

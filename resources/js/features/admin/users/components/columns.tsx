@@ -3,10 +3,10 @@
 import { ArrowUpDown, MoreVertical } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { Badge } from "@/Components/ui/badge";
 import { Button } from "@/Components/ui/button";
 
 import { User } from "@/types";
+import { UserActions } from "./user-actions";
 
 export const columns: ColumnDef<User>[] = [
     {
@@ -50,20 +50,18 @@ export const columns: ColumnDef<User>[] = [
         },
     },
 
-    // {
-    //   id: "actions",
-    //   cell: ({ row }) => {
-    //     const id = row.original.$id;
+    {
+        id: "actions",
+        cell: ({ row }) => {
+            const id = row.original.id;
 
-    //     const projectId = row.original.projectId;
-
-    //     return (
-    //       <TaskActions id={id} projectId={projectId}>
-    //         <Button className="size-8 p-0" variant="ghost">
-    //           <MoreVertical className="size-4" />
-    //         </Button>
-    //       </TaskActions>
-    //     );
-    //   },
-    // },
+            return (
+                <UserActions id={id}>
+                    <Button variant="ghost" className="size-5 p-0">
+                        <MoreVertical className="size-4 cursor-pointer" />
+                    </Button>
+                </UserActions>
+            );
+        },
+    },
 ];
