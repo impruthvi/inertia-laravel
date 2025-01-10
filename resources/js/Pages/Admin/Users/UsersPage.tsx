@@ -12,6 +12,7 @@ import { useCreateUserModal } from "@/features/admin/users/components/hooks/use-
 import { SortingState } from "@tanstack/react-table";
 import { Input } from "@headlessui/react";
 import { useState } from "react";
+import useDebounce from "@/hooks/useDebounce";
 
 type Filter = {
     search: string;
@@ -52,14 +53,9 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
         });
     };
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Handle search changes here, e.g., make API calls
-        const searchValue = e.target.value;
-        setFilter((prev) => ({
-            ...prev,
-            search: searchValue,
-        }));
-        const params: Record<string, string> = { search: searchValue };
+    const handleSearchChange = () => {
+
+        const params: Record<string, string> = { search: filter.search };
 
         // Include sorting in the parameters
         if (filter.sort.length > 0) {
@@ -68,7 +64,7 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
             });
         }
 
-        if (!searchValue) {
+        if (!filter.search) {
             delete params.search;
         }
 
@@ -78,6 +74,8 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
             preserveScroll: true,
         });
     };
+
+    useDebounce(filter.search, 500, handleSearchChange);
 
     return (
         <AdminAuthenticatedLayout>
@@ -90,7 +88,12 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
                                 <Input
                                     type="text"
                                     placeholder="Search users"
-                                    onChange={handleSearchChange}
+                                    onChange={(e) => {
+                                        setFilter((prev) => ({
+                                            ...prev,
+                                            search: e.target.value,
+                                        }));
+                                    }}
                                     value={filter.search}
                                 />
                             </div>
