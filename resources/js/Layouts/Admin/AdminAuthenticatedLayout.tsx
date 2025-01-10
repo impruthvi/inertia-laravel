@@ -1,6 +1,7 @@
 import { Navbar } from "@/Components/Navbar";
 import { Sidebar } from "@/Components/Sidebar";
 import { CreateUserModal } from "@/features/admin/users/components/create-user-modal";
+import { EditUserModal } from "@/features/admin/users/components/edit-user-modal";
 import { PropsWithChildren, ReactNode } from "react";
 
 export default function AdminAuthenticated({
@@ -9,6 +10,7 @@ export default function AdminAuthenticated({
     return (
         <div className="min-h-screen">
             <CreateUserModal />
+            <EditUserModal />
             <div className="flex w-full h-full">
                 <div className="fixed left-0 top-0 hidden lg:block lg:w-[264px] h-full overflow-y-auto">
                     <Sidebar />
