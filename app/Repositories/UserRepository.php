@@ -43,4 +43,61 @@ class UserRepository implements UserInterface
 
         return $users->get();
     }
+
+    /**
+     * Retrieve a user based on the provided ID and selection criteria.
+     *
+     * @param int $id The ID of the user to retrieve.
+     * @param array $select The columns to select from the users table. Default is ['id', 'name', 'email', 'created_at'].
+     * 
+     * @return User|null The user or null if not found.
+     */
+    public function find(int $id, array $select = ['id', 'name', 'email', 'created_at']): User|null
+    {
+        return User::select($select)->find($id);
+    }
+
+    /**
+     * Create a new user with the provided data.
+     *
+     * @param array $data The data to create the user with.
+     * 
+     * @return User|null The created user or null if creation failed.
+     */
+    public function create(array $data): User|null
+    {
+        return User::create($data);
+    }
+
+    /**
+     * Update a user based on the provided ID and data.
+     *
+     * @param int $id The ID of the user to update.
+     * @param array $data The data to update the user with.
+     * 
+     * @return User|null The updated user or null if update failed.
+     */
+    public function update(int $id, array $data): User|null
+    {
+        $user = User::find($id);
+
+        if ($user) {
+            $user->update($data);
+            return $user;
+        }
+
+        return null;
+    }
+
+    /**
+     * Delete a user based on the provided ID.
+     *
+     * @param int $id The ID of the user to delete.
+     * 
+     * @return bool True if the user was deleted, false otherwise.
+     */
+    public function delete(int $id): bool
+    {
+        return User::destroy($id);
+    }
 }

@@ -61,10 +61,8 @@ class UserController extends Controller
     {
         $validated = $request->validated();
 
-        // create user
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
+        $this->userInterface->create([
+            ...$validated,
             'password' => generatePassword(User::USER_DEFAULT_PASSWORD),
         ]);
 
@@ -84,20 +82,20 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        return response()->json(['error' => false, 'data' => User::find($id)]); 
+        // Get user
+        $user = $this->userInterface->find($id);
+
+        // Return response in JSON
+        return response()->json(['error' => false, 'data' => $user]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): \Illuminate\Http\RedirectResponse
     {
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->save();
+        $this->userInterface->update($id, $request->all());
 
-        // return response()->json(['error' => false, 'data' => $user]);
         return redirect()->back()->with('success', 'User Updated successfully');
     }
 
@@ -106,7 +104,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        User::destroy($id);
+        $this->userInterface->delete($id);
         return redirect()->back()->with('success', 'User deleted successfully');
     }
 }
