@@ -21,6 +21,8 @@ class UserController extends Controller
      */
     public function index(Request $request): Response
     {
+        $this->authorize(get_ability('access'));
+
         // Extract and sanitize input
         $search = $request->input('search');
         $sortArray = $request->input('sort', []);
