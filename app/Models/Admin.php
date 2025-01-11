@@ -32,6 +32,8 @@ class Admin extends Authenticatable
         'password',
     ];
 
+    protected $appends = ['access_permissions', 'custom_permissions'];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -53,5 +55,23 @@ class Admin extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+
+    public function getAccessPermissionsAttribute(): array
+    {
+        if ($this->permissions->count() > 0 && ! $this?->trashedRole?->trashed()) {
+            $permission = $this->getPermissionsViaRoles()->pluck('name')->toArray();
+            $additional_permissions = $this->permissions->pluck('name')->toArray();
+
+            return array_unique([...$permission, ...$additional_permissions]);
+        } else {
+            return $this->getPermissionsViaRoles()->pluck('name')->toArray();
+        }
+    }
+
+    public function getCustomPermissionsAttribute()
+    {
+        return $this->permissions->pluck('name')->toArray();
     }
 }

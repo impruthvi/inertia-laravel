@@ -1,8 +1,14 @@
 export interface User {
     id: number;
+    first_name: string;
+    last_name: string;
     name: string;
+    role: string;
     email: string;
-    email_verified_at?: string;
+    email_verified_at: string;
+    access_permissions: Array<string>;
+    trashed_role: Role;
+    role_permission: Role | null;
 }
 
 export type PageProps<
