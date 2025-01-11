@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { User } from "@/types";
 
+const PRIVILEGED_ROLES = [] as const;
+type PrivilegedRole = (typeof PRIVILEGED_ROLES)[number];
+
 const ACTIONS = ["add", "edit", "view", "delete"] as const;
 export type Action = (typeof ACTIONS)[number];
 
@@ -17,6 +20,11 @@ export function useAbility({
     checkFull = null,
     hasAccess = true,
 }: UseAbilityParams) {
+    const isPrivilegedRole = useMemo(
+        () => PRIVILEGED_ROLES.includes(user.role as PrivilegedRole),
+        [user.role]
+    );
+
     const routePermission = useMemo(() => {
         if (checkFull !== null) return checkFull;
         if (!check) return "";
@@ -42,14 +50,16 @@ export function useAbility({
 
     const hasPermission = useMemo(() => {
         if (!hasAccess) return false;
+        if (isPrivilegedRole) return true;
         return (
             routePermission !== "" &&
             user.access_permissions?.includes(routePermission)
         );
-    }, [hasAccess, routePermission, user.access_permissions]);
+    }, [hasAccess, isPrivilegedRole, routePermission, user.access_permissions]);
 
     return {
         hasPermission,
         routePermission,
+        isPrivilegedRole,
     };
 }
