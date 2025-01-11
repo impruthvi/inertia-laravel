@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\AdminRoleEnum;
+use App\Enums\AdminRoleEnum;
 use App\Models\Admin;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
