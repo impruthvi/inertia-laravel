@@ -12,6 +12,7 @@ import { columns } from "@/features/admin/users/components/columns";
 import { useCreateUserModal } from "@/features/admin/users/hooks/use-create-user-modal";
 import useDebounce from "@/hooks/useDebounce";
 import TextInput from "@/Components/TextInput";
+import { HasAbility } from "@/Components/HasAbility";
 
 type Filter = {
     search: string;
@@ -21,6 +22,7 @@ type Filter = {
 export default function UsersPage({ users }: { users: PaginatedData<User> }) {
     const { open: createUser } = useCreateUserModal();
     const { query } = usePage().props.ziggy;
+    const authUser = usePage().props.auth.user;
     const currentPage = Number(query.page) || 1;
 
     // Initialize filters from URL query parameters
@@ -99,14 +101,16 @@ export default function UsersPage({ users }: { users: PaginatedData<User> }) {
                                     value={filter.search}
                                 />
                             </div>
-                            <Button
-                                className="w-full lg:w-auto"
-                                size="sm"
-                                onClick={createUser}
-                            >
-                                <PlusIcon className="size-4 mr-2" />
-                                New
-                            </Button>
+                            <HasAbility user={authUser} check="add">
+                                <Button
+                                    className="w-full lg:w-auto"
+                                    size="sm"
+                                    onClick={createUser}
+                                >
+                                    <PlusIcon className="size-4 mr-2" />
+                                    New
+                                </Button>
+                            </HasAbility>
                         </div>
                         <DottedSeparator className="my-4" />
                         <DataTable
