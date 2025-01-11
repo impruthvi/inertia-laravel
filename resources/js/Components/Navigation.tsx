@@ -1,24 +1,14 @@
 import { cn, isRouteActive } from "@/lib/utils";
 import { Link } from "@inertiajs/react";
-import { UserIcon } from "lucide-react";
-import { GoHome, GoHomeFill } from "react-icons/go";
+import { HasAbility } from "@/Components/HasAbility"; // Adjust the import path as needed
+import { User } from "@/types";
+import { routes } from "@/lib/routes";
 
-const routes = [
-    {
-        label: "Dashboard",
-        route: "admin.dashboard",
-        icon: GoHome,
-        activeIcon: GoHomeFill,
-    },
-    {
-        label: "Users",
-        route: "admin.users.index",
-        icon: UserIcon,
-        activeIcon: UserIcon,
-    },
-];
+interface NavigationProps {
+    user: User;
+}
 
-export const Navigation = () => {
+export const Navigation = ({ user }: NavigationProps) => {
     return (
         <nav aria-label="Main navigation">
             <ul className="flex flex-col space-y-1">
@@ -27,39 +17,45 @@ export const Navigation = () => {
                     const Icon = isActive ? item.activeIcon : item.icon;
 
                     return (
-                        <li key={item.route}>
-                            <Link
-                                href={route(item.route)}
-                                className="block"
-                                aria-current={isActive ? "page" : undefined}
-                            >
-                                <div
-                                    className={cn(
-                                        "flex items-center gap-2.5 p-2.5 rounded-md",
-                                        "font-medium transition-colors duration-200",
-                                        "hover:bg-white hover:text-primary hover:shadow-sm",
-                                        "text-neutral-500",
-                                        isActive && [
-                                            "bg-white",
-                                            "shadow-sm",
-                                            "text-primary",
-                                            "hover:bg-white/90",
-                                        ]
-                                    )}
+                        <HasAbility
+                            key={item.route}
+                            user={user}
+                            checkFull={item.permission} // Pass the specific permission to check
+                        >
+                            <li>
+                                <Link
+                                    href={route(item.route)}
+                                    className="block"
+                                    aria-current={isActive ? "page" : undefined}
                                 >
-                                    <Icon
+                                    <div
                                         className={cn(
-                                            "w-5 h-5",
-                                            isActive
-                                                ? "text-primary"
-                                                : "text-neutral-500"
+                                            "flex items-center gap-2.5 p-2.5 rounded-md",
+                                            "font-medium transition-colors duration-200",
+                                            "hover:bg-white hover:text-primary hover:shadow-sm",
+                                            "text-neutral-500",
+                                            isActive && [
+                                                "bg-white",
+                                                "shadow-sm",
+                                                "text-primary",
+                                                "hover:bg-white/90",
+                                            ]
                                         )}
-                                        aria-hidden="true"
-                                    />
-                                    <span>{item.label}</span>
-                                </div>
-                            </Link>
-                        </li>
+                                    >
+                                        <Icon
+                                            className={cn(
+                                                "w-5 h-5",
+                                                isActive
+                                                    ? "text-primary"
+                                                    : "text-neutral-500"
+                                            )}
+                                            aria-hidden="true"
+                                        />
+                                        <span>{item.label}</span>
+                                    </div>
+                                </Link>
+                            </li>
+                        </HasAbility>
                     );
                 })}
             </ul>
