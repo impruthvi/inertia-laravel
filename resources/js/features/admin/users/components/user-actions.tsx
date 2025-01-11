@@ -15,8 +15,9 @@ import {
 } from "@/Components/ui/dropdown-menu";
 import { useEditUserModal } from "../hooks/use-edit-user-modal";
 import { useConfirm } from "@/hooks/use-confirm";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { toast } from "sonner";
+import { HasAbility } from "@/Components/HasAbility";
 
 interface TaskActionsProps {
     id: string;
@@ -24,6 +25,7 @@ interface TaskActionsProps {
 }
 
 export const UserActions = ({ id, children }: TaskActionsProps) => {
+    const authUser = usePage().props.auth.user;
     const { open } = useEditUserModal();
     const [ConfirmDialog, confirm] = useConfirm(
         "Delete user",
@@ -41,7 +43,6 @@ export const UserActions = ({ id, children }: TaskActionsProps) => {
                 toast.success("User deleted successfully");
             },
         });
-
     };
 
     return (
@@ -50,21 +51,24 @@ export const UserActions = ({ id, children }: TaskActionsProps) => {
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem
-                        onClick={() => open(id)}
-                        className="font-medium p-[10px]"
-                    >
-                        <PencilIcon className="size-4 mr-2 stroke-2" />
-                        Edit User
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                        onClick={onDelete}
-                        // disabled={isPending}
-                        className="text-amber-700 focus:text-amber-700 font-medium p-[10px]"
-                    >
-                        <TrashIcon className="size-4 mr-2 stroke-2" />
-                        Delete User
-                    </DropdownMenuItem>
+                    <HasAbility user={authUser} check="edit">
+                        <DropdownMenuItem
+                            onClick={() => open(id)}
+                            className="font-medium p-[10px]"
+                        >
+                            <PencilIcon className="size-4 mr-2 stroke-2" />
+                            Edit User
+                        </DropdownMenuItem>
+                    </HasAbility>
+                    <HasAbility user={authUser} check="delete">
+                        <DropdownMenuItem
+                            onClick={onDelete}
+                            className="text-amber-700 focus:text-amber-700 font-medium p-[10px]"
+                        >
+                            <TrashIcon className="size-4 mr-2 stroke-2" />
+                            Delete User
+                        </DropdownMenuItem>
+                    </HasAbility>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
