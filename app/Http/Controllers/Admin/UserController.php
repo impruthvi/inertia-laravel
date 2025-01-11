@@ -61,6 +61,8 @@ class UserController extends Controller
      */
     public function store(CreateUserRequest $request)
     {
+        $this->authorize(get_ability('add'));
+
         $validated = $request->validated();
 
         $this->userInterface->create([
@@ -86,6 +88,7 @@ class UserController extends Controller
     {
         // Get user
         $user = $this->userInterface->find($id);
+        $this->authorize(get_ability('edit'), $user);
 
         // Return response in JSON
         return response()->json(['error' => false, 'data' => $user]);
@@ -96,6 +99,9 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id): \Illuminate\Http\RedirectResponse
     {
+        $user = $this->userInterface->find($id);
+        $this->authorize(get_ability('edit'), $user);
+
         $this->userInterface->update($id, $request->all());
 
         return redirect()->back()->with('success', 'User Updated successfully');
@@ -107,6 +113,8 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $this->userInterface->delete($id);
+        $this->authorize(get_ability('delete'));
+
         return redirect()->back()->with('success', 'User deleted successfully');
     }
 }
