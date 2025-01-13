@@ -4,11 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\AdminRoleEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Role\RoleRequest;
+use App\Interfaces\RoleInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class RoleController extends Controller
 {
+
+    function __construct(protected RoleInterface $roleInterface) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -32,9 +37,13 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RoleRequest $request)
     {
-        dd($request->all());
+        $this->authorize(get_ability('add'));
+
+        $this->roleInterface->store($request->all());
+
+        return redirect()->back()->with('success', 'Role created successfully');
     }
 
     /**
