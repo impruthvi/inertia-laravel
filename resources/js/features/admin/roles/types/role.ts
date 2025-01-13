@@ -8,6 +8,6 @@ export interface RolePermission {
 
 export interface FormData {
     id: number | null;
-    name: string;
+    display_name: string;
     roles: Record<number, Permission[]>;
 }

@@ -25,6 +25,7 @@ export default function CreateRole({ rolePermissions }: CreateRoleProps) {
         reset,
         processing,
         hasOtherPermissions,
+        errors
     } = useRoleManagement(rolePermissions);
 
     const handleSubmit = () => {
@@ -45,8 +46,9 @@ export default function CreateRole({ rolePermissions }: CreateRoleProps) {
                     <div className="h-full flex flex-col overflow-auto p-4">
                         <div className="flex flex-col gap-y-2 lg:flex-row justify-between items-center">
                             <RoleNameInput
-                                value={data.name}
-                                onChange={(value) => setData("name", value)}
+                                value={data.display_name}
+                                onChange={(value) => setData("display_name", value)}
+                                error={errors.display_name}
                             />
                             <SaveRoleButton
                                 user={authUser}

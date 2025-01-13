@@ -5,7 +5,7 @@ export const useRoleManagement = (initialRolePermissions: RolePermission[]) => {
     const { data, setData, post, errors, reset, processing } =
         useForm<FormData>({
             id: null,
-            name: "",
+            display_name: "",
             roles: {},
         });
 
