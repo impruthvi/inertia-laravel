@@ -79,3 +79,32 @@ if (! function_exists('create_permissions')) {
         }
     }
 }
+
+if (! function_exists('permission_to_array')) {
+    function permission_to_array(array $permissions, string $role = 'admin'): array
+    {
+        if (empty($permissions)) {
+            return [];
+        }
+
+        $roles_array = [];
+
+        foreach ($permissions as $permission) {
+            [$access, $role_name] = explode('_', $permission);
+            if ($access !== 'access') {
+                $index = collect(role_permissions($role))->pluck('route_prefix')->search($role_name) + 1;
+                if (empty($roles_array)) {
+                    $roles_array[$index] = [$access];
+                } else {
+                    if (array_key_exists($index, $roles_array)) {
+                        $roles_array[$index] = [...$roles_array[$index], $access];
+                    } else {
+                        $roles_array[$index] = [$access];
+                    }
+                }
+            }
+        }
+
+        return $roles_array;
+    }
+}
