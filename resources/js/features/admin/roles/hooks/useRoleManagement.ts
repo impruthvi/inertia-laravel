@@ -1,12 +1,21 @@
 import { useForm } from "@inertiajs/react";
-import { FormData, Permission, RolePermission } from "../types/role";
+import { Permission, RolePermission } from "../types/role";
 
-export const useRoleManagement = (initialRolePermissions: RolePermission[]) => {
-    const { data, setData, post, errors, reset, processing } =
+interface FormData {
+    id: number | null;
+    display_name: string;
+    roles: Record<number, Permission[]>;
+}
+
+export const useRoleManagement = (
+    initialRolePermissions: RolePermission[],
+    existingRole?: Partial<FormData>
+) => {
+    const { data, setData, post, put, errors, reset, processing } =
         useForm<FormData>({
-            id: null,
-            display_name: "",
-            roles: {},
+            id: existingRole?.id ?? null,
+            display_name: existingRole?.display_name ?? "",
+            roles: existingRole?.roles ?? {},
         });
 
     const isChecked = (id: number, type: Permission | "all") => {
@@ -114,6 +123,7 @@ export const useRoleManagement = (initialRolePermissions: RolePermission[]) => {
         handleSelect,
         handleSelectAll,
         post,
+        put,
         errors,
         reset,
         processing,
