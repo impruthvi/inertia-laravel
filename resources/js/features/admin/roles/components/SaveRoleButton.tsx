@@ -7,12 +7,14 @@ interface SaveRoleButtonProps {
     user: any;
     onClick: () => void;
     processing: boolean;
+    isUpdate?: boolean;
 }
 
 export const SaveRoleButton: React.FC<SaveRoleButtonProps> = ({
     user,
     onClick,
     processing,
+    isUpdate = false,
 }) => (
     <HasAbility user={user} check="add">
         <Button
@@ -22,7 +24,8 @@ export const SaveRoleButton: React.FC<SaveRoleButtonProps> = ({
             disabled={processing}
         >
             <PlusIcon className="size-4 mr-2" />
-            {processing ? "Saving..." : "Save"}
+            {isUpdate ? "Update" : "Save"}
+            {processing && "..."}
         </Button>
     </HasAbility>
 );
