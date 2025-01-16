@@ -74,4 +74,9 @@ class Admin extends Authenticatable
     {
         return $this->permissions->pluck('name')->toArray();
     }
+
+    public function scopeExcludeSuperRole($query)
+    {
+        $query->whereNotIn('name', [Role::SUPER_ADMIN]);
+    }
 }

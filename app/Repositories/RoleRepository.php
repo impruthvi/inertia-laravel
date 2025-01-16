@@ -29,11 +29,13 @@ class RoleRepository implements RoleInterface
             ])
             ->thenReturn();
 
+            $roles->excludeSuperRole();
+
         if ($paginate) {
-            return $query->paginate($record_per_page);
+            return $roles->paginate($record_per_page);
         }
 
-        return $query->get();
+        return $roles->get();
     }
 
 
