@@ -17,7 +17,7 @@ import { AdminCreateForm } from "@/features/admin/admins/components/create-admin
 interface CreateAdminProps {
     rolePermissions: RolePermission[];
     roles: Role[];
-    role?: Role;
+    role: Role;
     selected_permissions: Record<number, string[]>;
 }
 
@@ -53,7 +53,7 @@ export default function CreateAdmin({
         processing,
         hasOtherPermissions,
         errors,
-    } = useRoleManagement(rolePermissions, undefined, typedPermissions);
+    } = useRoleManagement(rolePermissions);
 
     const handleSubmit = () => {
         post(route("admin.admins.store"), {
@@ -88,6 +88,7 @@ export default function CreateAdmin({
                         setData={setData}
                         errors={errors}
                         roles={roles}
+                        role={role}
                     />
 
                     <DottedSeparator />

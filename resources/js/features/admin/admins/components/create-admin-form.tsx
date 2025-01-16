@@ -13,8 +13,9 @@ import { router } from "@inertiajs/react";
 interface AdminCreateFormComponentProps {
     data: any;
     setData: (key: string, value: any) => void;
-    errors: any;
+    errors: Record<string, string>;
     roles: Role[];
+    role: Role;
 }
 
 export const AdminCreateForm: React.FC<AdminCreateFormComponentProps> = ({
@@ -22,8 +23,11 @@ export const AdminCreateForm: React.FC<AdminCreateFormComponentProps> = ({
     setData,
     errors,
     roles,
+    role,
 }) => {
     const handleOnChange = (value: string) => {
+        setData("role", value);
+
         router.visit(
             route("admin.admins.create", {
                 role: value,
@@ -35,6 +39,9 @@ export const AdminCreateForm: React.FC<AdminCreateFormComponentProps> = ({
             }
         );
     };
+
+    // Ensure we have a valid string value for the Select
+    const selectedRoleId = role?.id ? String(role.id) : data.role || "";
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -70,12 +77,15 @@ export const AdminCreateForm: React.FC<AdminCreateFormComponentProps> = ({
                 >
                     Role
                 </label>
-                <Select value={data.role} onValueChange={handleOnChange}>
+                <Select
+                    defaultValue={selectedRoleId}
+                    onValueChange={handleOnChange}
+                >
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                     <SelectContent>
-                        {roles.map((role) => (
+                        {roles?.map((role) => (
                             <SelectItem key={role.id} value={String(role.id)}>
                                 {role.display_name}
                             </SelectItem>
@@ -83,7 +93,7 @@ export const AdminCreateForm: React.FC<AdminCreateFormComponentProps> = ({
                     </SelectContent>
                 </Select>
                 {errors.role && (
-                    <InputError message={errors.role} className="text-sm" />
+                    <InputError message={errors.role} className="mt-1" />
                 )}
             </div>
         </div>

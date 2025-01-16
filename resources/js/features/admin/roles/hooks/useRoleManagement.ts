@@ -11,8 +11,7 @@ interface FormData {
 
 export const useRoleManagement = (
     initialRolePermissions: RolePermission[],
-    existingRole?: Partial<FormData>,
-    selectedPermissions?: Record<number, Permission[]>
+    existingRole?: Partial<FormData>
 ) => {
     const { data, setData, post, put, errors, reset, processing } =
         useForm<FormData>({
@@ -20,12 +19,6 @@ export const useRoleManagement = (
             display_name: existingRole?.display_name ?? "",
             roles: existingRole?.roles ?? {},
         });
-
-    useEffect(() => {
-        if (selectedPermissions && !isEqual(data.roles, selectedPermissions)) {
-            setData("roles", selectedPermissions);
-        }
-    }, [selectedPermissions]);
 
     const isChecked = (id: number, type: Permission | "all") => {
         const roles = data.roles[id];
