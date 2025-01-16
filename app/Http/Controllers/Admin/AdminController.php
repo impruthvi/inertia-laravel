@@ -53,7 +53,8 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->authorize(get_ability('add'));
+        dd($request->all());
     }
 
     /**

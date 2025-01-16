@@ -26,7 +26,7 @@ export const AdminCreateForm: React.FC<AdminCreateFormComponentProps> = ({
     role,
 }) => {
     const handleOnChange = (value: string) => {
-        setData("role", value);
+        setData("role_id", value);
 
         router.visit(
             route("admin.admins.create", {
