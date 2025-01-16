@@ -1,4 +1,5 @@
 import { useForm } from "@inertiajs/react";
+import { useEffect } from "react";
 import { Permission, RolePermission } from "../types/role";
 
 interface FormData {
@@ -17,6 +18,13 @@ export const useRoleManagement = (
             display_name: existingRole?.display_name ?? "",
             roles: existingRole?.roles ?? {},
         });
+
+    // Update roles when existingRole.roles changes
+    useEffect(() => {
+        if (existingRole?.roles) {
+            setData("roles", existingRole.roles);
+        }
+    }, [existingRole?.roles]);
 
     const isChecked = (id: number, type: Permission | "all") => {
         const roles = data.roles[id];
@@ -64,7 +72,6 @@ export const useRoleManagement = (
                     ])
                 );
             } else {
-                // If selecting view permission
                 updatedRoles[id] = Array.from(
                     new Set([...updatedRoles[id], permission])
                 );
