@@ -4,11 +4,37 @@ namespace App\Repositories;
 
 use App\Interfaces\RoleInterface;
 use App\Models\Role;
+use App\Pipelines\Role\SearchPipeline;
+use App\Pipelines\Role\SortPipeline;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pipeline\Pipeline;
 
 class RoleRepository implements RoleInterface
 {
+
+    public function get(array $select = [''], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null
+    {
+        // Start building the query
+        $query = Role::select($select);
+        $record_per_page = config('utility.record_per_page');
+
+        $roles = app(Pipeline::class)
+            ->send($query)
+            ->through([
+                new SearchPipeline($filters),
+                new SortPipeline($filters),
+            ])
+            ->thenReturn();
+
+        if ($paginate) {
+            return $query->paginate($record_per_page);
+        }
+
+        return $query->get();
+    }
 
 
     public function store(array $attributes): Role

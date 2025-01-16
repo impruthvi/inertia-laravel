@@ -4,8 +4,13 @@ namespace App\Interfaces;
 
 use Spatie\Permission\Models\Role;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 interface RoleInterface
 {
+
+    public function get(array $select = [], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null;
 
     public function store(array $attributes): Role;
 

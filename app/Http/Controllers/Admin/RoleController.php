@@ -6,6 +6,7 @@ use App\Enums\AdminRoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Role\RoleRequest;
 use App\Interfaces\RoleInterface;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -17,9 +18,31 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        dd("Role Index");
+        $this->authorize(get_ability('access'));
+
+        // Extract and sanitize input
+        $search = $request->input('search');
+        $sortArray = $request->input('sort', []);
+
+        // Apply search filter
+        $filters = [
+            'search' => $search,
+            'sort' => $sortArray,
+        ];
+
+        // Paginate results and preserve query parameters
+        $roles = $this->roleInterface->get(
+            select: ['display_name'],
+            filters: $filters,
+            paginate: true
+        );
+
+        return Inertia::render('Admin/RoleManagement/Role/Index', [
+            'roles' => $roles,
+            'filters' => $filters,
+        ]);
     }
 
     /**
@@ -98,6 +121,10 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $this->authorize(get_ability('delete'));
+
+        $this->roleInterface->delete($id);
+
+        return redirect()->back()->with('success', 'Role deleted successfully');
     }
 }

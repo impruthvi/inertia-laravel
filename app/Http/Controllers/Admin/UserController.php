@@ -112,8 +112,8 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->userInterface->delete($id);
         $this->authorize(get_ability('delete'));
+        $this->userInterface->delete($id);
 
         return redirect()->back()->with('success', 'User deleted successfully');
     }
