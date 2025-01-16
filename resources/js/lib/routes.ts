@@ -34,4 +34,12 @@ export const routes: Route[] = [
         permission: "access_roles",
         matchRoutes: ["admin.roles.create", "admin.roles.edit"], // Add specific sub-routes
     },
+    {
+        label: "Admins",
+        route: "admin.admins.index",
+        icon: ShieldIcon,
+        activeIcon: ShieldIcon,
+        permission: "access_admins",
+        matchRoutes: ["admin.admins.create", "admin.admins.edit"], // Add specific sub-routes
+    }
 ];

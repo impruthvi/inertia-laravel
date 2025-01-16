@@ -30,6 +30,20 @@ const pathnameMap = {
             },
         },
     },
+    admins: {
+        title: "Admins",
+        description: "View all admins here",
+        actions: {
+            create: {
+                title: "Create Admin",
+                description: "Add a new admin here",
+            },
+            edit: {
+                title: "Edit Admin",
+                description: "Modify admin details here",
+            },
+        },
+    },
 };
 
 const defaultMap = {

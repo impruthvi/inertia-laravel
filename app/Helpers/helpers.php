@@ -18,6 +18,12 @@ if (! function_exists('admin_roles')) {
                 'permissions' => ['add', 'edit', 'view', 'delete'],
                 'route_prefix' => 'roles',
             ],
+            [
+                'id' => 3,
+                'name' => 'Admins',
+                'permissions' => ['add', 'edit', 'view', 'delete'],
+                'route_prefix' => 'admins',
+            ]
 
         ];
     }
