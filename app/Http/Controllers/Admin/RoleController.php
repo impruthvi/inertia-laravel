@@ -34,7 +34,7 @@ class RoleController extends Controller
 
         // Paginate results and preserve query parameters
         $roles = $this->roleInterface->get(
-            select: ['display_name'],
+            select: ['id', 'display_name'],
             filters: $filters,
             paginate: true
         );

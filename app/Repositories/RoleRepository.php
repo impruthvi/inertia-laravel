@@ -15,7 +15,7 @@ use Illuminate\Pipeline\Pipeline;
 class RoleRepository implements RoleInterface
 {
 
-    public function get(array $select = [''], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null
+    public function get(array $select = ['id', 'name', 'display_name', 'guard_name', 'portal', 'is_common_role'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null
     {
         // Start building the query
         $query = Role::select($select);
@@ -29,7 +29,7 @@ class RoleRepository implements RoleInterface
             ])
             ->thenReturn();
 
-            $roles->excludeSuperRole();
+        $roles->excludeSuperRole();
 
         if ($paginate) {
             return $roles->paginate($record_per_page);

@@ -1,8 +1,6 @@
 import React from "react";
 
 import {
-    ExternalLink,
-    ExternalLinkIcon,
     PencilIcon,
     TrashIcon,
 } from "lucide-react";
@@ -13,22 +11,20 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
-// import { useEditUserModal } from "../hooks/use-edit-user-modal";
 import { useConfirm } from "@/hooks/use-confirm";
 import { router, usePage } from "@inertiajs/react";
 import { toast } from "sonner";
 import { HasAbility } from "@/Components/HasAbility";
 
-interface TaskActionsProps {
+interface RoleActionsProps {
     id: number;
     children: React.ReactNode;
 }
 
-export const RoleActions = ({ id, children }: TaskActionsProps) => {
+export const RoleActions = ({ id, children }: RoleActionsProps) => {
     const authUser = usePage().props.auth.user;
-    // const { open } = useEditUserModal();
     const [ConfirmDialog, confirm] = useConfirm(
-        "Delete user",
+        "Delete role",
         "This action cannot be undone",
         "destructive"
     );
@@ -51,15 +47,17 @@ export const RoleActions = ({ id, children }: TaskActionsProps) => {
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                    {/* <HasAbility user={authUser} check="edit">
+                    <HasAbility user={authUser} check="edit">
                         <DropdownMenuItem
-                            onClick={() => open(id)}
+                            onClick={() => {
+                                router.get(route("admin.roles.edit", id));
+                            }}
                             className="font-medium p-[10px]"
                         >
                             <PencilIcon className="size-4 mr-2 stroke-2" />
-                            Edit User
+                            Edit Role
                         </DropdownMenuItem>
-                    </HasAbility> */}
+                    </HasAbility>
                     <HasAbility user={authUser} check="delete">
                         <DropdownMenuItem
                             onClick={onDelete}

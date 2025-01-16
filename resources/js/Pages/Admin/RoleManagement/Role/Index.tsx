@@ -9,7 +9,6 @@ import { DottedSeparator } from "@/Components/DottedSeparator";
 import AdminAuthenticatedLayout from "@/Layouts/Admin/AdminAuthenticatedLayout";
 import { DataTable } from "@/features/admin/roles/components/data-table";
 import { columns } from "@/features/admin/roles/components/columns";
-import { useCreateUserModal } from "@/features/admin/users/hooks/use-create-user-modal";
 import useDebounce from "@/hooks/useDebounce";
 import TextInput from "@/Components/TextInput";
 import { HasAbility } from "@/Components/HasAbility";
@@ -21,7 +20,6 @@ type Filter = {
 };
 
 export default function RoleIndex({ roles }: { roles: PaginatedData<Role> }) {
-    const { open: createUser } = useCreateUserModal();
     const { query } = usePage().props.ziggy;
     const authUser = usePage().props.auth.user;
     const currentPage = Number(query.page) || 1;
@@ -44,7 +42,6 @@ export default function RoleIndex({ roles }: { roles: PaginatedData<Role> }) {
         }
 
         currentFilter.sort.forEach((sort) => {
-            console.log(sort);
             
             params[`sort[${sort.id}]`] = sort.desc ? "desc" : "asc";
         });
@@ -85,7 +82,7 @@ export default function RoleIndex({ roles }: { roles: PaginatedData<Role> }) {
 
     return (
         <AdminAuthenticatedLayout>
-            <Head title="Users" />
+            <Head title="Roles" />
             <div className="h-full flex flex-col">
                 <div className="flex-1 w-full border rounded-lg">
                     <div className="h-full flex flex-col overflow-auto p-4">
@@ -108,7 +105,9 @@ export default function RoleIndex({ roles }: { roles: PaginatedData<Role> }) {
                                 <Button
                                     className="w-full lg:w-auto"
                                     size="sm"
-                                    onClick={createUser}
+                                    onClick={() => {
+                                        router.get(route("admin.roles.create"));
+                                    }}
                                 >
                                     <PlusIcon className="size-4 mr-2" />
                                     New
