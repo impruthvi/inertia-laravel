@@ -28,13 +28,10 @@ export default function CreateAdmin({
     selected_permissions,
 }: CreateAdminProps) {
     const authUser = usePage().props.auth.user;
-    const [selectedRole, setSelectedRole] = useState<Record<number, string[]>>(
-        selected_permissions || null
-    );
 
     // Convert the permissions to the correct type
     const typedPermissions: Record<number, Permission[]> = Object.entries(
-        selectedRole
+        selected_permissions
     ).reduce(
         (acc, [key, values]) => ({
             ...acc,
@@ -44,10 +41,6 @@ export default function CreateAdmin({
         }),
         {}
     );
-
-    useEffect(() => {
-        setSelectedRole(selected_permissions);
-    }, [selected_permissions]);
 
     const {
         data,
@@ -60,9 +53,7 @@ export default function CreateAdmin({
         processing,
         hasOtherPermissions,
         errors,
-    } = useRoleManagement(rolePermissions, {
-        roles: typedPermissions,
-    });
+    } = useRoleManagement(rolePermissions, undefined, typedPermissions);
 
     const handleSubmit = () => {
         post(route("admin.admins.store"), {

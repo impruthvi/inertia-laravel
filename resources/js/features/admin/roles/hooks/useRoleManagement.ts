@@ -1,6 +1,7 @@
 import { useForm } from "@inertiajs/react";
 import { useEffect } from "react";
 import { Permission, RolePermission } from "../types/role";
+import { isEqual } from "lodash";
 
 interface FormData {
     id: number | null;
@@ -10,7 +11,8 @@ interface FormData {
 
 export const useRoleManagement = (
     initialRolePermissions: RolePermission[],
-    existingRole?: Partial<FormData>
+    existingRole?: Partial<FormData>,
+    selectedPermissions?: Record<number, Permission[]>
 ) => {
     const { data, setData, post, put, errors, reset, processing } =
         useForm<FormData>({
@@ -19,12 +21,11 @@ export const useRoleManagement = (
             roles: existingRole?.roles ?? {},
         });
 
-    // Update roles when existingRole.roles changes
     useEffect(() => {
-        if (existingRole?.roles) {
-            setData("roles", existingRole.roles);
+        if (selectedPermissions && !isEqual(data.roles, selectedPermissions)) {
+            setData("roles", selectedPermissions);
         }
-    }, [existingRole?.roles]);
+    }, [selectedPermissions]);
 
     const isChecked = (id: number, type: Permission | "all") => {
         const roles = data.roles[id];
