@@ -18,6 +18,12 @@ if (! function_exists('admin_roles')) {
                 'permissions' => ['add', 'edit', 'view', 'delete'],
                 'route_prefix' => 'roles',
             ],
+            [
+                'id' => 3,
+                'name' => 'Admins',
+                'permissions' => ['add', 'edit', 'view', 'delete'],
+                'route_prefix' => 'admins',
+            ]
 
         ];
     }
@@ -77,5 +83,58 @@ if (! function_exists('create_permissions')) {
             $permission = Permission::updateOrCreate(['name' => $defaultPermission, 'guard_name' => $guard_name]);
             $role->givePermissionTo($permission);
         }
+    }
+}
+
+if (! function_exists('permission_to_array')) {
+    function permission_to_array(array $permissions, string $role = 'admin'): array
+    {
+        if (empty($permissions)) {
+            return [];
+        }
+
+        $roles_array = [];
+
+        foreach ($permissions as $permission) {
+            [$access, $role_name] = explode('_', $permission);
+            if ($access !== 'access') {
+                $index = collect(role_permissions($role))->pluck('route_prefix')->search($role_name) + 1;
+                if (empty($roles_array)) {
+                    $roles_array[$index] = [$access];
+                } else {
+                    if (array_key_exists($index, $roles_array)) {
+                        $roles_array[$index] = [...$roles_array[$index], $access];
+                    } else {
+                        $roles_array[$index] = [$access];
+                    }
+                }
+            }
+        }
+
+        return $roles_array;
+    }
+}
+
+if (! function_exists('array_to_permission')) {
+    function array_to_permission(array $permissions, string $role = 'admin'): array
+    {
+        if (empty($permissions)) {
+            return [];
+        }
+
+        $permissions_array = [];
+
+        foreach ($permissions as $key => $permission_prefix) {
+            if (array_key_exists(($key - 1), role_permissions($role))) {
+                array_push($permissions_array, 'access_' . role_permissions($role)[$key - 1]['route_prefix']);
+                foreach ($permission_prefix as $permission_prefix) {
+                    if (in_array($permission_prefix, role_permissions($role)[$key - 1]['permissions'])) {
+                        array_push($permissions_array, $permission_prefix . '_' . role_permissions($role)[$key - 1]['route_prefix']);
+                    }
+                }
+            }
+        }
+
+        return $permissions_array;
     }
 }

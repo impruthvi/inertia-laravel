@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\AdminRoleEnum;
 use App\Models\Admin;
 use App\Models\Role;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
 class AdminSeeder extends Seeder
@@ -14,8 +15,7 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        // $adminRole = Role::create(['name' => Str::uuid(), 'display_name' => Role::SUPER_ADMIN]);
-        $adminRole = Role::create(['name' => Role::SUPER_ADMIN, 'guard_name' => 'admin']);
+        $adminRole = Role::create(['name' => Str::uuid(), 'display_name' => Role::SUPER_ADMIN, 'guard_name' => 'admin']);
         $defaultAdminPermissions = get_system_permissions(role_permissions('admin'));
         create_permissions($defaultAdminPermissions, $adminRole, 'admin');
 

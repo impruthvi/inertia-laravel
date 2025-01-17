@@ -1,6 +1,6 @@
 import { cn, isRouteActive } from "@/lib/utils";
 import { Link } from "@inertiajs/react";
-import { HasAbility } from "@/Components/HasAbility"; // Adjust the import path as needed
+import { HasAbility } from "@/Components/HasAbility";
 import { User } from "@/types";
 import { routes } from "@/lib/routes";
 
@@ -13,14 +13,20 @@ export const Navigation = ({ user }: NavigationProps) => {
         <nav aria-label="Main navigation">
             <ul className="flex flex-col space-y-1">
                 {routes.map((item) => {
-                    const isActive = isRouteActive(item.route);
+                    // Determine if the current route matches the item's route or its matchRoutes
+                    const isActive =
+                        isRouteActive(item.route) ||
+                        item.matchRoutes?.some((matchRoute) =>
+                            isRouteActive(matchRoute)
+                        );
+
                     const Icon = isActive ? item.activeIcon : item.icon;
 
                     return (
                         <HasAbility
                             key={item.route}
                             user={user}
-                            checkFull={item.permission} // Pass the specific permission to check
+                            checkFull={item.permission}
                         >
                             <li>
                                 <Link

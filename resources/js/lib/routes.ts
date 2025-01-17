@@ -1,4 +1,4 @@
-import { UserIcon } from "lucide-react";
+import { ShieldIcon, UserIcon } from "lucide-react";
 import { GoHome, GoHomeFill } from "react-icons/go";
 
 interface Route {
@@ -7,6 +7,7 @@ interface Route {
     icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     activeIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     permission: string;
+    matchRoutes?: string[]; // Additional routes to match for active state
 }
 
 export const routes: Route[] = [
@@ -15,7 +16,7 @@ export const routes: Route[] = [
         route: "admin.dashboard",
         icon: GoHome,
         activeIcon: GoHomeFill,
-        permission: "access_users", // for the now just added user access permission
+        permission: "access_users",
     },
     {
         label: "Users",
@@ -23,5 +24,22 @@ export const routes: Route[] = [
         icon: UserIcon,
         activeIcon: UserIcon,
         permission: "access_users",
+        matchRoutes: ["admin.users.create", "admin.users.edit"], // Add specific sub-routes
     },
+    {
+        label: "Roles",
+        route: "admin.roles.index",
+        icon: ShieldIcon,
+        activeIcon: ShieldIcon,
+        permission: "access_roles",
+        matchRoutes: ["admin.roles.create", "admin.roles.edit"], // Add specific sub-routes
+    },
+    {
+        label: "Admins",
+        route: "admin.admins.index",
+        icon: ShieldIcon,
+        activeIcon: ShieldIcon,
+        permission: "access_admins",
+        matchRoutes: ["admin.admins.create", "admin.admins.edit"], // Add specific sub-routes
+    }
 ];

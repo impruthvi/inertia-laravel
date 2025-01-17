@@ -2,20 +2,25 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\AdminRoleEnum;
+use App\Traits\CreatedUpdatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
 
 class Admin extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\AdminFactory> */
-    use HasFactory, Notifiable, HasRoles;
+    use CreatedUpdatedBy, HasFactory, Notifiable, HasRoles;
 
     protected $guard = 'admin';
+
+    public const ADMIN_DEFAULT_PASSWORD = 'Admin@123';
+
 
     /**
      * The attributes that are mass assignable.
@@ -30,6 +35,8 @@ class Admin extends Authenticatable
         'name',
         'email',
         'password',
+        'created_by',
+        'updated_by',
     ];
 
     protected $appends = ['access_permissions', 'custom_permissions'];
@@ -57,6 +64,11 @@ class Admin extends Authenticatable
         ];
     }
 
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'created_by', 'id');
+    }
+
 
     public function getAccessPermissionsAttribute(): array
     {
@@ -73,5 +85,21 @@ class Admin extends Authenticatable
     public function getCustomPermissionsAttribute()
     {
         return $this->permissions->pluck('name')->toArray();
+    }
+
+    public function scopeExcludeSuperRole($query)
+    {
+        $query->whereNotIn('name', [Role::SUPER_ADMIN]);
+    }
+
+    public function scopeVisibility($query): void
+    {
+        $user = Auth::user();
+
+        switch ($user->role) {
+            case AdminRoleEnum::ADMIN->value:
+                $query->whereHas('createdBy', fn($query) => $query->where('role', AdminRoleEnum::ADMIN->value));
+                break;
+        }
     }
 }
