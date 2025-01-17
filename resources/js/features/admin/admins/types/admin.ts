@@ -4,5 +4,6 @@ export interface Admin {
     last_name: string;
     name: string;
     role: string;
+    role_id: number;
     email: string;
 }
