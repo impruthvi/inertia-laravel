@@ -92,8 +92,8 @@ export const AdminCreateForm: React.FC<AdminCreateFormComponentProps> = ({
                         ))}
                     </SelectContent>
                 </Select>
-                {errors.role && (
-                    <InputError message={errors.role} className="mt-1" />
+                {errors.role_id && (
+                    <InputError message={errors.role_id} className="mt-1" />
                 )}
             </div>
         </div>
