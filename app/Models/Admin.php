@@ -17,6 +17,9 @@ class Admin extends Authenticatable
 
     protected $guard = 'admin';
 
+    public const ADMIN_DEFAULT_PASSWORD = 'Admin@123';
+
+
     /**
      * The attributes that are mass assignable.
      *
