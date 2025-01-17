@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->enum('role', ['admin']);
+            $table->foreignId('created_by')->nullable()->constrained('admins')->onDelete('SET NULL');
+            $table->foreignId('updated_by')->nullable()->constrained('admins')->onDelete('SET NULL');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
