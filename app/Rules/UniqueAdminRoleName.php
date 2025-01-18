@@ -7,6 +7,7 @@ use App\Models\Role;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class UniqueAdminRoleName implements ValidationRule
 {
@@ -17,18 +18,27 @@ class UniqueAdminRoleName implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (Auth::user()->role === AdminRoleEnum::ADMIN->value) {
-            $role = Role::where('display_name', $value)->whereHas('createdBy', function ($query) {
-                $query->where('role', AdminRoleEnum::ADMIN->value);
-            });
+        $user = Auth::user();
 
+        // Check if the user exists and has the "role" property
+        if ($user && property_exists($user, 'role') && $user->role === AdminRoleEnum::ADMIN->value) {
+            /** @var Builder<Role> $roleQuery */
+            $roleQuery = Role::query();
+
+            $roleQuery->where('display_name', $value)
+                ->whereHas('createdBy', function (Builder $query) {
+                    $query->where('role', AdminRoleEnum::ADMIN->value);
+                });
+
+            // Exclude the current role if updating
             if (request()->route('role')) {
-                $role->where('id', '!=', request()->route('role'));
+                $roleQuery->where('id', '!=', request()->route('role'));
             }
-            $role = $role->first();
+
+            $role = $roleQuery->first();
 
             if ($role) {
-                $fail('messages.unique_admin_role')->translate();
+                $fail(__('messages.unique_admin_role'));
             }
         }
     }
