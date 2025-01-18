@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repositories;
 
 use App\Interfaces\RoleInterface;
@@ -15,12 +17,17 @@ use Illuminate\Pipeline\Pipeline;
 class RoleRepository implements RoleInterface
 {
 
+    /**
+     * @param array<int, string> $select
+     * @param array<string, mixed> $filters
+     * @param bool $paginate
+     * @return LengthAwarePaginator<Role>|Collection<int, Role>|null
+     */
     public function get(array $select = ['id', 'name', 'display_name', 'guard_name', 'portal', 'is_common_role'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null
     {
         // Start building the query
         $query = Role::select($select);
-        $record_per_page = config('utility.record_per_page');
-
+        $record_per_page = filter_var(config('utility.record_per_page', 10), FILTER_VALIDATE_INT) ?: 10;
         $roles = app(Pipeline::class)
             ->send($query)
             ->through([
@@ -29,6 +36,8 @@ class RoleRepository implements RoleInterface
             ])
             ->thenReturn();
 
+
+        /** @var \Illuminate\Database\Eloquent\Builder<Role> $roles */
         $roles->excludeSuperRole();
 
         if ($paginate) {
@@ -38,39 +47,68 @@ class RoleRepository implements RoleInterface
         return $roles->get();
     }
 
-
+    /**
+     * @param array<string, mixed> $attributes
+     * @return Role
+     * @throws \InvalidArgumentException if permissions are not iterable
+     */
     public function store(array $attributes): Role
     {
-        $role = Role::create(['name' => Str::uuid(), 'display_name' => $attributes['display_name']]);
+        $role = Role::create(['name' => (string) Str::uuid(), 'display_name' => $attributes['display_name']]);
+
+        // Validate 'permissions' key
+        if (!isset($attributes['permissions']) || !is_array($attributes['permissions'])) {
+            throw new \InvalidArgumentException("The 'permissions' attribute must be an array.");
+        }
 
         foreach ($attributes['permissions'] as $permissionName) {
             $permission = Permission::updateOrCreate(['name' => $permissionName]);
             $role->givePermissionTo($permission);
         }
 
+        /** @var Role $role */
         return $role;
     }
 
+
+    /**
+     * @param string $id
+     * @return Role|null
+     */
     public function find(string $id): ?Role
     {
         // return Role::with(['favorite', 'permissions'])->visibility()->withTrashed()->find($id);
         return Role::find($id);
     }
-
-    public function update(int $id, array $attributes): bool
+    /**
+     * @param string $id
+     * @param array<string, mixed> $attributes
+     * @return bool
+     */
+    public function update(string $id, array $attributes): bool
     {
         $role = $this->find($id);
 
-        $role->syncPermissions($attributes['permissions']);
+        if (!$role) {
+            // Handle the case when the role is not found
+            return false; // Or throw an exception
+        }
 
-        // if (auth()->user()->role == AdminRoleEnum::PRACTICE->value || auth()->user()->role == AdminRoleEnum::PROVIDER->value) {
-        //     return true;
-        // }
+        // Sync permissions
+        if (isset($attributes['permissions']) && is_array($attributes['permissions'])) {
+            $role->syncPermissions($attributes['permissions']);
+        }
 
+        // Update the display name
         return $role->update(['display_name' => $attributes['display_name']]) > 0;
     }
 
-    public function delete(int $id): bool
+
+    /**
+     * @param string $id
+     * @return bool
+     */
+    public function delete(string $id): bool
     {
         // return Role::withTrashed()->findOrFail($id)->delete() > 0;
         return Role::findOrFail($id)->delete() > 0;

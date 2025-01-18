@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repositories;
 
 use App\Interfaces\UserInterface;
@@ -14,20 +16,16 @@ class UserRepository implements UserInterface
 {
 
     /**
-     * Retrieve a collection of users based on the provided filters and selection criteria.
-     *
-     * @param array $select The columns to select from the users table. Default is ['name', 'email', 'created_at'].
-     * @param array $filters The filters to apply to the query.
-     * @param bool $paginate Whether to paginate the results. Default is true.
-     * 
-     * @return LengthAwarePaginator|Collection|null The paginated collection of users or a collection of users.
+     * @param array<int, string> $select
+     * @param array<string, mixed> $filters
+     * @param bool $paginate
+     * @return LengthAwarePaginator<User>|Collection<int, User>|null
      */
     public function get(array $select = ['id', 'name', 'email', 'created_at'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null
     {
         // Start building the query
         $query = User::select($select);
-        $record_per_page = config('utility.record_per_page');
-
+        $record_per_page = filter_var(config('utility.record_per_page', 10), FILTER_VALIDATE_INT) ?: 10;
         $users = app(Pipeline::class)
             ->send($query)
             ->through([
@@ -36,7 +34,7 @@ class UserRepository implements UserInterface
             ])
             ->thenReturn();
 
-        // Apply pagination
+        /** @var \Illuminate\Database\Eloquent\Builder<User> $users */
         if ($paginate) {
             return $users->paginate($record_per_page)->appends($filters);
         }
@@ -45,24 +43,18 @@ class UserRepository implements UserInterface
     }
 
     /**
-     * Retrieve a user based on the provided ID and selection criteria.
-     *
-     * @param int $id The ID of the user to retrieve.
-     * @param array $select The columns to select from the users table. Default is ['id', 'name', 'email', 'created_at'].
-     * 
-     * @return User|null The user or null if not found.
+     * @param string $id
+     * @param array<int, string> $select
+     * @return User|null
      */
-    public function find(int $id, array $select = ['id', 'name', 'email', 'created_at']): User|null
+    public function find(string $id, array $select = ['id', 'name', 'email', 'created_at']): User|null
     {
         return User::select($select)->find($id);
     }
 
     /**
-     * Create a new user with the provided data.
-     *
-     * @param array $data The data to create the user with.
-     * 
-     * @return User|null The created user or null if creation failed.
+     * @param array<string, mixed> $data
+     * @return User|null
      */
     public function create(array $data): User|null
     {
@@ -70,14 +62,11 @@ class UserRepository implements UserInterface
     }
 
     /**
-     * Update a user based on the provided ID and data.
-     *
-     * @param int $id The ID of the user to update.
-     * @param array $data The data to update the user with.
-     * 
-     * @return User|null The updated user or null if update failed.
+     * @param string $id
+     * @param array<string, mixed> $data
+     * @return User|null
      */
-    public function update(int $id, array $data): User|null
+    public function update(string $id, array $data): User|null
     {
         $user = User::find($id);
 
@@ -92,12 +81,12 @@ class UserRepository implements UserInterface
     /**
      * Delete a user based on the provided ID.
      *
-     * @param int $id The ID of the user to delete.
+     * @param string $id The ID of the user to delete.
      * 
      * @return bool True if the user was deleted, false otherwise.
      */
-    public function delete(int $id): bool
+    public function delete(string $id): bool
     {
-        return User::destroy($id);
+        return User::destroy($id) > 0;
     }
 }

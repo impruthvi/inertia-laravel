@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repositories;
 
 use App\Interfaces\AdminInterface;
@@ -13,11 +15,16 @@ use Illuminate\Pipeline\Pipeline;
 
 class AdminRepository implements AdminInterface
 {
-    public function get(array $select = ['id', 'name', 'email', 'role', 'created_at'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null
+    /**
+     * @param array<int, string> $select
+     * @param array<string, mixed> $filters
+     * @param bool $paginate
+     * @return LengthAwarePaginator<Admin>|Collection<int, Admin>|null
+     */
+    public function get(array $select = ['id', 'name', 'email', 'role', 'created_at'], array $filters = [], bool $paginate = true): LengthAwarePaginator|Collection|null
     {
-        // Start building the query
         $query = Admin::select($select);
-        $record_per_page = config('utility.record_per_page');
+        $recordPerPage = filter_var(config('utility.record_per_page', 10), FILTER_VALIDATE_INT) ?: 10;
 
         $admins = app(Pipeline::class)
             ->send($query)
@@ -27,70 +34,88 @@ class AdminRepository implements AdminInterface
             ])
             ->thenReturn();
 
+        /** @var \Illuminate\Database\Eloquent\Builder<Admin> $admins */
         $admins->visibility();
 
-        // Apply pagination
-        if ($paginate) {
-            return $admins->paginate($record_per_page)->appends($filters);
-        }
-
-        return $admins->get();
+        return $paginate
+            ? $admins->paginate($recordPerPage)->appends($filters)
+            : $admins->get();
     }
 
-    public function find(int $id, array $select = ['*']): Admin|null
+    /**
+     * @param string $id
+     * @param array<int, string> $select
+     * @return Admin|null
+     */
+    public function find(string $id, array $select = ['*']): Admin|null
     {
         return Admin::select($select)->find($id);
     }
 
-
+    /**
+     * @param array<string, mixed> $attributes
+     * @return Admin
+     */
     public function store(array $attributes): Admin
     {
         $attributes['password'] = generatePassword(Admin::ADMIN_DEFAULT_PASSWORD);
 
         $admin = Admin::create($attributes);
 
-        $admin->syncPermissions($attributes['custom_permissions']);
+        $permissions = is_array($attributes['custom_permissions']) ? $attributes['custom_permissions'] : [];
+        $admin->syncPermissions($permissions);
 
         return $admin;
     }
 
-    public function update(int $id, array $attributes): bool
+    /**
+     * @param string $id
+     * @param array<string, mixed> $attributes
+     * @return bool
+     */
+    public function update(string $id, array $attributes): bool
     {
         $admin = Admin::findOrFail($id);
 
-        $role = app(RoleInterface::class)->find($admin->role_id);
+        $role = app(RoleInterface::class)->find((string)$admin->role_id);
 
         if ($role) {
             $admin->removeRole($role->id);
         }
 
-        $admin->syncPermissions($attributes['custom_permissions']);
+        $permissions = is_array($attributes['custom_permissions']) ? $attributes['custom_permissions'] : [];
+        $admin->syncPermissions($permissions);
 
         $updateFields = $this->getFieldsForUpdate($attributes, $admin);
 
-        $done = $admin->update($updateFields) > 0;
-
-        return $done;
+        return $admin->update($updateFields) > 0;
     }
 
-    public function delete(int $id): bool
+    /**
+     * @param string $id
+     * @return bool
+     */
+    public function delete(string $id): bool
     {
         return Admin::findOrFail($id)->delete() > 0;
     }
 
-
-
-    private function getFieldsForUpdate($attributes, Admin $admin)
+    /**
+     * @param array<string, mixed> $attributes
+     * @return array<string, mixed>
+     */
+    private function getFieldsForUpdate(array $attributes, Admin $admin): array
     {
-        $firstName = isset($attributes['first_name']) ? $attributes['first_name'] : $admin->first_name;
-        $lastName = isset($attributes['last_name']) ? $attributes['last_name'] : $admin->last_name;
-        $name = $firstName . ' ' . $lastName;
+        $firstName = $attributes['first_name'] ?? $admin->first_name;
+        $lastName = $attributes['last_name'] ?? $admin->last_name;
+        // TODO: Change the name field to nullable in the database
+        $name = "WILL CHANGE NULLABLE";
 
         return [
             'first_name' => $firstName,
             'last_name' => $lastName,
             'name' => $name,
-            'email' => isset($attributes['email']) ? $attributes['email'] : $admin->email,
+            'email' => $attributes['email'] ?? $admin->email,
         ];
     }
 }

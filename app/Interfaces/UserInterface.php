@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Interfaces;
 
 use App\Models\User;
@@ -8,9 +10,41 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 interface UserInterface
 {
-    public function get(array $select = [],array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null;
-    public function find(int $id, array $select = []): User|null;
+    /**
+     * @param array<int, string> $select
+     * @param array<string, mixed> $filters
+     * @param bool $paginate
+     * @return LengthAwarePaginator<User>|Collection<int, User>|null
+     */
+    public function get(
+        array $select = [],
+        array $filters = [],
+        bool $paginate = true
+    ): LengthAwarePaginator|Collection|null;
+
+    /**
+     * @param string $id
+     * @param array<int, string> $select
+     * @return User|null
+     */
+    public function find(string $id, array $select = []): User|null;
+
+    /**
+     * @param array<string, mixed> $data
+     * @return User|null
+     */
     public function create(array $data): User|null;
-    public function update(int $id, array $data): User|null;
-    public function delete(int $id): bool;
+
+    /**
+     * @param string $id
+     * @param array<string, mixed> $data
+     * @return User|null
+     */
+    public function update(string $id, array $data): User|null;
+
+    /**
+     * @param string $id
+     * @return bool
+     */
+    public function delete(string $id): bool;
 }
