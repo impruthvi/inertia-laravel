@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\AdminRoleEnum;
 use App\Traits\CreatedUpdatedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,6 +20,7 @@ class Admin extends Authenticatable
     /** @use HasFactory<\Database\Factories\AdminFactory> */
     use CreatedUpdatedBy, HasFactory, Notifiable, HasRoles;
 
+    /** @var string */
     protected $guard = 'admin';
 
     public const ADMIN_DEFAULT_PASSWORD = 'Admin@123';
@@ -64,42 +68,112 @@ class Admin extends Authenticatable
         ];
     }
 
+    /**
+     * @return BelongsTo<Admin, $this>
+     */
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'created_by', 'id');
     }
 
-
+    /**
+     * Get the access permissions for the admin.
+     *
+     * @return array<string>
+     */
     public function getAccessPermissionsAttribute(): array
     {
-        if ($this->permissions->count() > 0 && ! $this?->trashedRole?->trashed()) {
-            $permission = $this->getPermissionsViaRoles()->pluck('name')->toArray();
-            $additional_permissions = $this->permissions->pluck('name')->toArray();
+        /**
+         * Converts a collection of permission objects to an array of permission names.
+         *
+         * @template TKey of array-key
+         * @template TValue
+         * @param \Illuminate\Support\Collection<TKey, TValue> $collection
+         * @return array<string>
+         */
+        $convertToStrings = function (\Illuminate\Support\Collection $collection): array {
+            return $collection
+                ->pluck('name')
+                /** @var \Illuminate\Support\Collection<int, mixed> $collection */
+                ->filter(function (mixed $item): bool {
+                    return $item !== null;
+                })
+                /** @var \Illuminate\Support\Collection<int, mixed> $collection */
+                ->map(function (mixed $item): string {
+                    return is_string($item) ? $item : '';
+                })
+                /** @var \Illuminate\Support\Collection<int, string> $collection */
+                ->filter(function (string $item): bool {
+                    return $item !== '';
+                })
+                ->values()
+                ->toArray();
+        };
 
-            return array_unique([...$permission, ...$additional_permissions]);
-        } else {
-            return $this->getPermissionsViaRoles()->pluck('name')->toArray();
+        /** 
+         * @var \Illuminate\Support\Collection<int, \Spatie\Permission\Models\Permission>
+         */
+        $rolePermissions = $this->getPermissionsViaRoles();
+
+        if ($this->permissions->count() > 0) {
+            /** @var array<string> */
+            $permissions = $convertToStrings($rolePermissions);
+
+            /** 
+             * @var \Illuminate\Support\Collection<int, \Spatie\Permission\Models\Permission> $directPermissions 
+             */
+            $directPermissions = $this->permissions;
+
+            /** @var array<string> */
+            $additionalPermissions = $convertToStrings($directPermissions);
+
+            /** @var array<string> */
+            return array_values(array_unique(
+                array_merge($permissions, $additionalPermissions)
+            ));
         }
+
+        /** @var array<string> */
+        return $convertToStrings($rolePermissions);
     }
 
+
+
+
+    /**
+     * @return array<mixed>
+     */
     public function getCustomPermissionsAttribute()
     {
         return $this->permissions->pluck('name')->toArray();
     }
 
-    public function scopeExcludeSuperRole($query)
+    /**
+     * @param Builder<Admin> $query
+     * @return Builder<Admin>
+     */
+    public function scopeExcludeSuperRole(Builder $query): Builder
     {
-        $query->whereNotIn('name', [Role::SUPER_ADMIN]);
+        return $query->whereNotIn('name', [Role::SUPER_ADMIN]);
     }
 
-    public function scopeVisibility($query): void
+
+    /**
+     * @param Builder<Admin> $query
+     * @return void
+     */
+    public function scopeVisibility(Builder $query): void
     {
         $user = Auth::user();
 
-        switch ($user->role) {
-            case AdminRoleEnum::ADMIN->value:
-                $query->whereHas('createdBy', fn($query) => $query->where('role', AdminRoleEnum::ADMIN->value));
-                break;
+        if ($user instanceof Admin) {
+            switch ($user->role) {
+                case AdminRoleEnum::ADMIN->value:
+                    $query->whereHas('createdBy', function (Builder $query) {
+                        $query->where('role', AdminRoleEnum::ADMIN->value);
+                    });
+                    break;
+            }
         }
     }
 }

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Traits\CreatedUpdatedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Permission\Models\Role as SpatieRole;
-
 
 class Role extends SpatieRole
 {
@@ -14,7 +16,6 @@ class Role extends SpatieRole
     protected $table = 'roles';
 
     const SUPER_ADMIN = 'super_admin';
-
     const SUPER_ADMIN_EMAIL = 'admin@test.com';
 
     protected $fillable = [
@@ -27,11 +28,22 @@ class Role extends SpatieRole
         'updated_by',
     ];
 
-    public function scopeExcludeSuperRole($query)
+    /**
+     * Scope a query to exclude the super admin role.
+     *
+     * @param Builder<Role> $query
+     * @return Builder<Role>
+     */
+    public function scopeExcludeSuperRole(Builder $query): Builder
     {
-        $query->whereNotIn('display_name', [Role::SUPER_ADMIN]);
+        return $query->whereNotIn('display_name', [self::SUPER_ADMIN]);
     }
 
+    /**
+     * Get the admin who created the role.
+     *
+     * @return BelongsTo<Admin, $this>
+     */
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'created_by', 'id');
