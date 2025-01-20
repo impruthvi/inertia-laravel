@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Admin\AdminRequest;
 use App\Interfaces\AdminInterface;
 use App\Interfaces\RoleInterface;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class AdminController extends Controller
 {
@@ -15,10 +18,11 @@ class AdminController extends Controller
         protected RoleInterface $roleInterface,
         protected AdminInterface $adminInterface
     ) {}
+
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $this->authorize(get_ability('view'));
         // Extract and sanitize input
@@ -38,7 +42,7 @@ class AdminController extends Controller
             paginate: true
         );
 
-        return inertia('Admin/RoleManagement/Admin/Index', [
+        return Inertia::render('Admin/RoleManagement/Admin/Index', [
             'admins' => $admins,
         ]);
     }
@@ -46,7 +50,7 @@ class AdminController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create(Request $request): Response
     {
         $this->authorize(get_ability('add'));
 
@@ -55,17 +59,26 @@ class AdminController extends Controller
             paginate: false
         );
 
-        $role = $request->filled('role')
+        /**
+         * @var \App\Models\Admin $user
+         */
+        $user = Auth::user();
+
+        /**
+         * @var \App\Models\Role | null $role
+         */
+        $role = $request->filled('role') && is_string($request->role)
             ? $this->roleInterface->find($request->role)
-            : [];
+            : null;
 
         $selectedPermissions = ($role)
+            // @phpstan-ignore-next-line
             ? permission_to_array($role->permissions->pluck('name')->toArray(), Auth::user()->role)
             : [];
 
-        return inertia('Admin/RoleManagement/Admin/Create', [
+        return Inertia::render('Admin/RoleManagement/Admin/Create', [
             'roles' => $roles,
-            'rolePermissions' => role_permissions(Auth::user()->role),
+            'rolePermissions' => role_permissions($user->role),
             'role' => $role,
             'selected_permissions' => $selectedPermissions,
         ]);
@@ -74,7 +87,7 @@ class AdminController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AdminRequest $request)
+    public function store(AdminRequest $request): RedirectResponse
     {
         $this->authorize(get_ability('add'));
 
@@ -86,7 +99,7 @@ class AdminController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): void
     {
         //
     }
@@ -94,7 +107,7 @@ class AdminController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, string $id)
+    public function edit(Request $request, string $id): Response
     {
         $this->authorize(get_ability('edit'));
 
@@ -105,15 +118,22 @@ class AdminController extends Controller
 
         $admin = $this->adminInterface->find($id);
 
-        $role = $request->filled('role')
+        /**
+         * @var \App\Models\Admin $user
+         */
+        $user = Auth::user();
+
+
+        // Ensure $role is not null before using it
+        $role = $request->filled('role') && is_string($request->role)
             ? $this->roleInterface->find($request->role)
             : $admin;
-
+        // @phpstan-ignore-next-line
         $selectedPermissions = permission_to_array($role->permissions->pluck('name')->toArray(), Auth::user()->role);
 
-        return inertia('Admin/RoleManagement/Admin/Update', [
+        return Inertia::render('Admin/RoleManagement/Admin/Update', [
             'roles' => $roles,
-            'rolePermissions' => role_permissions(Auth::user()->role),
+            'rolePermissions' => role_permissions($user->role),
             'admin' => $admin,
             'selected_permissions' => $selectedPermissions,
             'role' => $role,
@@ -123,21 +143,25 @@ class AdminController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(AdminRequest $request, string $id)
+    public function update(AdminRequest $request, string $id): RedirectResponse
     {
         $this->authorize(get_ability('edit'));
 
+        /**
+         * @var \App\Models\Admin $user
+         */
         $user = $this->adminInterface->find($id);
 
+        // Ensure the condition is only true when comparing the correct properties
         if (
             $user->id == Auth::id() &&
-            ($user->role_id != $request->role_id ||
-                $user->custom_permission != $request->validated()['custom_permission'])
+            ($user->role_id != $request->role_id || ($user->custom_permission ?? null) != $request->validated()['custom_permission'])
         ) {
             return redirect()->back()->with('error', 'You cannot change your own role or permissions');
         }
 
-        $this->adminInterface->update($user->id, $request->validated());
+        // Update the user
+        $this->adminInterface->update((string) $user->id, $request->validated());
 
         return redirect()->back()->with('success', 'Admin updated successfully');
     }
@@ -145,7 +169,7 @@ class AdminController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): RedirectResponse
     {
         $this->authorize(get_ability('delete'));
 

@@ -15,11 +15,20 @@ class ProfileController extends Controller
 {
     /**
      * Display the user's profile form.
+     * @param Request $request
+     * @return Response|RedirectResponse
      */
-    public function edit(Request $request): Response
+    public function edit(Request $request): Response | RedirectResponse
     {
+        $user = $request->user();
+
+        // Check if user is authenticated
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
     }
@@ -29,13 +38,21 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Check if user is authenticated
+        if (!$user) {
+            return redirect()->route('login');
         }
 
-        $request->user()->save();
+        $user->fill($request->validated());
+
+        // Only reset email verification if the email has changed
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit');
     }
@@ -45,11 +62,16 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = $request->user();
+
+        // Check if user is authenticated
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);
-
-        $user = $request->user();
 
         Auth::logout();
 
