@@ -11,7 +11,7 @@ use App\Models\Admin;
  * Trait CreatedUpdatedBy
  * 
  * This trait automatically manages the `created_by` and `updated_by` fields for Eloquent models.
- * These fields are typically populated with Admin IDs in the system.
+ * These field are typically populated with Admin ID in the system.
  *
  * Usage:
  * - Add `use CreatedUpdatedBy;` in the Eloquent model.
