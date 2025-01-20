@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
@@ -121,7 +123,7 @@ if (! function_exists('permission_to_array')) {
     /**
      * @param array<string> $permissions
      * @param string $role
-     * @return array<int, array<string>>
+     * @return array<non-empty-list<string>>
      */
     function permission_to_array(array $permissions, string $role = 'admin'): array
     {
