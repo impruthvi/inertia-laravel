@@ -33,7 +33,7 @@ interface RoleInterface
 
     /**
      * @param string $id
-     * @param array<string, mixed> $attributes
+     * @param array<mixed> $attributes
      * @return bool
      */
     public function update(string $id, array $attributes): bool;

@@ -118,7 +118,7 @@ class RoleController extends Controller
         if (empty($role)) {
             return redirect()->back()->with('error', 'Role not found');
         }
-        $this->roleInterface->update((string) $role->id, $request->validated());
+        $this->roleInterface->update((string) $role->id, $request->all());
 
         return redirect()->back()->with('success', 'Role updated successfully');
     }
