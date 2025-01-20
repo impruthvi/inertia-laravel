@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
@@ -11,23 +13,22 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ProfileController extends Controller
+final class ProfileController extends Controller
 {
     /**
      * Display the user's profile form.
-     * @param Request $request
-     * @return Response|RedirectResponse
      */
-    public function edit(Request $request): Response | RedirectResponse
+    public function edit(Request $request): Response|RedirectResponse
     {
         $user = $request->user();
 
         // Check if user is authenticated
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 
         return Inertia::render('Profile/Edit', [
+            // @phpstan-ignore-next-line
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
@@ -41,7 +42,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         // Check if user is authenticated
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 
@@ -65,7 +66,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         // Check if user is authenticated
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 

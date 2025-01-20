@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -13,7 +15,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class UserController extends Controller
+final class UserController extends Controller
 {
     public function __construct(
         protected UserInterface $userInterface
@@ -48,8 +50,6 @@ class UserController extends Controller
             'users' => $users,
         ]);
     }
-
-
 
     /**
      * Show the form for creating a new resource.
@@ -100,7 +100,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, string $id):RedirectResponse
+    public function update(UpdateUserRequest $request, string $id): RedirectResponse
     {
         $user = $this->userInterface->find($id);
 

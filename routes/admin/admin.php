@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
@@ -16,4 +18,4 @@ Route::prefix('admin')->middleware('auth:admin')->as('admin.')->group(function (
     Route::resource('admins', AdminController::class);
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

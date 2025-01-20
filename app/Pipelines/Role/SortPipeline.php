@@ -8,33 +8,34 @@ use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class SortPipeline
+final class SortPipeline
 {
     /**
-     * @param array<string, mixed> $filter
+     * @param  array<string, mixed>  $filter
      */
     public function __construct(protected array $filter) {}
 
     /**
      * @template TModel of Model
-     * @param Builder<TModel> $roles
-     * @param Closure(Builder<TModel>): Builder<TModel> $next
+     *
+     * @param  Builder<TModel>  $roles
+     * @param  Closure(Builder<TModel>): Builder<TModel>  $next
      * @return Builder<TModel>
      */
     public function handle(Builder $roles, Closure $next): Builder
     {
         $filter = $this->filter;
 
-        if (!empty($filter['sort']) && is_array($filter['sort'])) {
+        if (! empty($filter['sort']) && is_array($filter['sort'])) {
             $allowedSortFields = ['display_name'];
             $allowedSortDirections = ['asc', 'desc'];
 
             foreach ($filter['sort'] as $field => $direction) {
                 if (
                     is_string($field) && in_array($field, $allowedSortFields, true) &&
-                    is_string($direction) && in_array(strtolower($direction), $allowedSortDirections, true)
+                    is_string($direction) && in_array(mb_strtolower($direction), $allowedSortDirections, true)
                 ) {
-                    $roles->orderBy($field, strtolower($direction));
+                    $roles->orderBy($field, mb_strtolower($direction));
                 }
             }
         } else {

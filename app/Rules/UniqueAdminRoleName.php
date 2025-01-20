@@ -1,27 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Rules;
 
 use App\Enums\AdminRoleEnum;
 use App\Models\Role;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
-class UniqueAdminRoleName implements ValidationRule
+final class UniqueAdminRoleName implements ValidationRule
 {
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        /** @var \App\Models\Admin $user */
         $user = Auth::user();
 
-        // Check if the user exists and has the "role" property
-        if ($user && property_exists($user, 'role') && $user->role === AdminRoleEnum::ADMIN->value) {
+        if ($user->role === AdminRoleEnum::ADMIN->value) {
             /** @var Builder<Role> $roleQuery */
             $roleQuery = Role::query();
 

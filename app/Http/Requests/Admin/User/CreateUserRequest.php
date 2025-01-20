@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Admin\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateUserRequest extends FormRequest
+final class CreateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +24,8 @@ class CreateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => ["required", "string", "max:255", 'min:3'],
-            "email" => ["required", "string", "lowercase", "email", "max:255", "unique:users"],
+            'name' => ['required', 'string', 'max:255', 'min:3'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
         ];
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Interfaces\AdminInterface;
@@ -10,7 +12,7 @@ use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
-class RepositoryServiceProvider extends ServiceProvider
+final class RepositoryServiceProvider extends ServiceProvider
 {
     /**
      * Register services.

@@ -9,14 +9,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Permission\Models\Role as SpatieRole;
 
-class Role extends SpatieRole
+final class Role extends SpatieRole
 {
     use CreatedUpdatedBy;
 
-    protected $table = 'roles';
+    public const SUPER_ADMIN = 'super_admin';
 
-    const SUPER_ADMIN = 'super_admin';
-    const SUPER_ADMIN_EMAIL = 'admin@test.com';
+    public const SUPER_ADMIN_EMAIL = 'admin@test.com';
+
+    protected $table = 'roles';
 
     protected $fillable = [
         'name',
@@ -31,7 +32,7 @@ class Role extends SpatieRole
     /**
      * Scope a query to exclude the super admin role.
      *
-     * @param Builder<Role> $query
+     * @param  Builder<Role>  $query
      * @return Builder<Role>
      */
     public function scopeExcludeSuperRole(Builder $query): Builder

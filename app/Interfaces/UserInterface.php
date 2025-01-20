@@ -11,40 +11,30 @@ use Illuminate\Pagination\LengthAwarePaginator;
 interface UserInterface
 {
     /**
-     * @param array<int, string> $select
-     * @param array<string, mixed> $filters
-     * @param bool $paginate
-     * @return LengthAwarePaginator<User>|Collection<int, User>|null
+     * @param  array<int, string>  $select
+     * @param  array<string, mixed>  $filters
+     * @return LengthAwarePaginator<User>|Collection<int, User>
      */
     public function get(
         array $select = [],
         array $filters = [],
         bool $paginate = true
-    ): LengthAwarePaginator|Collection|null;
+    ): LengthAwarePaginator|Collection;
 
     /**
-     * @param string $id
-     * @param array<int, string> $select
-     * @return User|null
+     * @param  array<int, string>  $select
      */
-    public function find(string $id, array $select = []): User|null;
+    public function find(string $id, array $select = []): ?User;
 
     /**
-     * @param array<string, mixed> $data
-     * @return User|null
+     * @param  array<string, mixed>  $data
      */
-    public function create(array $data): User|null;
+    public function create(array $data): ?User;
 
     /**
-     * @param string $id
-     * @param array<string, mixed> $data
-     * @return User|null
+     * @param  array<string, mixed>  $data
      */
-    public function update(string $id, array $data): User|null;
+    public function update(string $id, array $data): ?User;
 
-    /**
-     * @param string $id
-     * @return bool
-     */
     public function delete(string $id): bool;
 }

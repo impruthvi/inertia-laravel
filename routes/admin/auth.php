@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AuthAuthenticatedSessionController;
 use App\Http\Controllers\Admin\Auth\RegisteredAdminController;
 use Illuminate\Support\Facades\Route;

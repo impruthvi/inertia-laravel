@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\AdminRoleEnum;
@@ -12,10 +14,9 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class RoleController extends Controller
+final class RoleController extends Controller
 {
-
-    function __construct(protected RoleInterface $roleInterface) {}
+    public function __construct(protected RoleInterface $roleInterface) {}
 
     /**
      * Display a listing of the resource.
@@ -82,7 +83,7 @@ class RoleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): Response | RedirectResponse
+    public function edit(string $id): Response|RedirectResponse
     {
         $this->authorize(get_ability('edit'));
 

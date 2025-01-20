@@ -12,16 +12,15 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
 
-class UserRepository implements UserInterface
+final class UserRepository implements UserInterface
 {
-
     /**
-     * @param array<int, string> $select
-     * @param array<string, mixed> $filters
-     * @param bool $paginate
-     * @return LengthAwarePaginator<User>|Collection<int, User>|null
+     * @param  array<int, string>  $select
+     * @param  array<string, mixed>  $filters
+     * @param  bool  $paginate
+     * @return LengthAwarePaginator<User>|Collection<int, User>
      */
-    public function get(array $select = ['id', 'name', 'email', 'created_at'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null
+    public function get(array $select = ['id', 'name', 'email', 'created_at'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection
     {
         // Start building the query
         $query = User::select($select);
@@ -43,35 +42,31 @@ class UserRepository implements UserInterface
     }
 
     /**
-     * @param string $id
-     * @param array<int, string> $select
-     * @return User|null
+     * @param  array<int, string>  $select
      */
-    public function find(string $id, array $select = ['id', 'name', 'email', 'created_at']): User|null
+    public function find(string $id, array $select = ['id', 'name', 'email', 'created_at']): ?User
     {
         return User::select($select)->find($id);
     }
 
     /**
-     * @param array<string, mixed> $data
-     * @return User|null
+     * @param  array<string, mixed>  $data
      */
-    public function create(array $data): User|null
+    public function create(array $data): User
     {
         return User::create($data);
     }
 
     /**
-     * @param string $id
-     * @param array<string, mixed> $data
-     * @return User|null
+     * @param  array<string, mixed>  $data
      */
-    public function update(string $id, array $data): User|null
+    public function update(string $id, array $data): ?User
     {
         $user = User::find($id);
 
         if ($user) {
             $user->update($data);
+
             return $user;
         }
 
@@ -81,8 +76,7 @@ class UserRepository implements UserInterface
     /**
      * Delete a user based on the provided ID.
      *
-     * @param string $id The ID of the user to delete.
-     * 
+     * @param  string  $id  The ID of the user to delete.
      * @return bool True if the user was deleted, false otherwise.
      */
     public function delete(string $id): bool

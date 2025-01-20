@@ -8,23 +8,21 @@ use App\Enums\AdminRoleEnum;
 use App\Traits\CreatedUpdatedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
 
-class Admin extends Authenticatable
+final class Admin extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\AdminFactory> */
-    use CreatedUpdatedBy, HasFactory, Notifiable, HasRoles;
-
-    /** @var string */
-    protected $guard = 'admin';
+    use CreatedUpdatedBy, HasFactory, HasRoles, Notifiable;
 
     public const ADMIN_DEFAULT_PASSWORD = 'Admin@123';
 
+    /** @var string */
+    protected $guard = 'admin';
 
     /**
      * The attributes that are mass assignable.
@@ -55,24 +53,11 @@ class Admin extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-    /**
      * @return BelongsTo<Admin, $this>
      */
     public function createdBy(): BelongsTo
     {
-        return $this->belongsTo(Admin::class, 'created_by', 'id');
+        return $this->belongsTo(self::class, 'created_by', 'id');
     }
 
     /**
@@ -87,7 +72,8 @@ class Admin extends Authenticatable
          *
          * @template TKey of array-key
          * @template TValue
-         * @param \Illuminate\Support\Collection<TKey, TValue> $collection
+         *
+         * @param  \Illuminate\Support\Collection<TKey, TValue>  $collection
          * @return array<string>
          */
         $convertToStrings = function (\Illuminate\Support\Collection $collection): array {
@@ -109,7 +95,7 @@ class Admin extends Authenticatable
                 ->toArray();
         };
 
-        /** 
+        /**
          * @var \Illuminate\Support\Collection<int, \Spatie\Permission\Models\Permission>
          */
         $rolePermissions = $this->getPermissionsViaRoles();
@@ -118,8 +104,8 @@ class Admin extends Authenticatable
             /** @var array<string> */
             $permissions = $convertToStrings($rolePermissions);
 
-            /** 
-             * @var \Illuminate\Support\Collection<int, \Spatie\Permission\Models\Permission> $directPermissions 
+            /**
+             * @var \Illuminate\Support\Collection<int, \Spatie\Permission\Models\Permission> $directPermissions
              */
             $directPermissions = $this->permissions;
 
@@ -138,10 +124,8 @@ class Admin extends Authenticatable
 
     public function getFullNameAttribute(): string
     {
-        return $this->first_name . ' ' . $this->last_name;
+        return $this->first_name.' '.$this->last_name;
     }
-
-
 
     /**
      * @return array<mixed>
@@ -152,7 +136,7 @@ class Admin extends Authenticatable
     }
 
     /**
-     * @param Builder<Admin> $query
+     * @param  Builder<Admin>  $query
      * @return Builder<Admin>
      */
     public function scopeExcludeSuperRole(Builder $query): Builder
@@ -160,16 +144,14 @@ class Admin extends Authenticatable
         return $query->whereNotIn('name', [Role::SUPER_ADMIN]);
     }
 
-
     /**
-     * @param Builder<Admin> $query
-     * @return void
+     * @param  Builder<Admin>  $query
      */
     public function scopeVisibility(Builder $query): void
     {
         $user = Auth::user();
 
-        if ($user instanceof Admin) {
+        if ($user instanceof self) {
             switch ($user->role) {
                 case AdminRoleEnum::ADMIN->value:
                     $query->whereHas('createdBy', function (Builder $query) {
@@ -178,5 +160,18 @@ class Admin extends Authenticatable
                     break;
             }
         }
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 }

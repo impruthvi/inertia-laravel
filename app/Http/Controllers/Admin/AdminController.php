@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -12,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AdminController extends Controller
+final class AdminController extends Controller
 {
     public function __construct(
         protected RoleInterface $roleInterface,
@@ -35,9 +37,8 @@ class AdminController extends Controller
             'sort' => $sortArray,
         ];
 
-
         $admins = $this->adminInterface->get(
-            select: ['id', 'first_name', 'last_name','email', 'role'],
+            select: ['id', 'first_name', 'last_name', 'email', 'role'],
             filters: $filters,
             paginate: true
         );
@@ -123,7 +124,6 @@ class AdminController extends Controller
          */
         $user = Auth::user();
 
-
         // Ensure $role is not null before using it
         $role = $request->filled('role') && is_string($request->role)
             ? $this->roleInterface->find($request->role)
@@ -154,8 +154,9 @@ class AdminController extends Controller
 
         // Ensure the condition is only true when comparing the correct properties
         if (
-            $user->id == Auth::id() &&
-            ($user->role_id != $request->role_id || ($user->custom_permission ?? null) != $request->validated()['custom_permission'])
+            $user->id === Auth::id() &&
+            // @phpstan-ignore-next-line
+            ($user->role_id !== $request->role_id || ($user->custom_permission ?? null) !== $request->validated()['custom_permission'])
         ) {
             return redirect()->back()->with('error', 'You cannot change your own role or permissions');
         }

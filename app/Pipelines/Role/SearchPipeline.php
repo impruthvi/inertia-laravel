@@ -8,17 +8,18 @@ use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class SearchPipeline
+final class SearchPipeline
 {
     /**
-     * @param array<string, mixed> $filter
+     * @param  array<string, mixed>  $filter
      */
     public function __construct(protected array $filter) {}
 
     /**
      * @template TModel of Model
-     * @param Builder<TModel> $roles
-     * @param Closure(Builder<TModel>): Builder<TModel> $next
+     *
+     * @param  Builder<TModel>  $roles
+     * @param  Closure(Builder<TModel>): Builder<TModel>  $next
      * @return Builder<TModel>
      */
     public function handle(Builder $roles, Closure $next): Builder
@@ -28,10 +29,10 @@ class SearchPipeline
             ? $this->filter['search']
             : null;
 
-        if (!empty($search_keyword)) {
+        if (! empty($search_keyword)) {
             $roles->where(function ($q) use ($search_keyword) {
                 // Perform the search query
-                $q->where('display_name', 'like', '%' . $search_keyword . '%');
+                $q->where('display_name', 'like', '%'.$search_keyword.'%');
             });
         }
 

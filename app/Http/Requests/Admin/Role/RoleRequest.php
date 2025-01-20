@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Admin\Role;
 
 use App\Enums\AdminRoleEnum;
@@ -7,7 +9,7 @@ use App\Rules\UniqueAdminRoleName;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class RoleRequest extends FormRequest
+final class RoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -65,18 +67,18 @@ class RoleRequest extends FormRequest
         $permissions = [];
 
         // Ensure $this->roles is an array and not empty before iterating
-        if (is_array($this->roles) && !empty($this->roles)) {
+        if (is_array($this->roles) && ! empty($this->roles)) {
             foreach ($this->roles as $key => $permission_prefixes) {
                 if ($permission_prefixes) {
                     $rolePermissions = role_permissions($this->getRoleName());
                     if (array_key_exists($key - 1, $rolePermissions)) {
                         // Ensure correct string concatenation
-                        $permissions[] = 'access_' . (string) $rolePermissions[$key - 1]['route_prefix'];
+                        $permissions[] = 'access_'.(string) $rolePermissions[$key - 1]['route_prefix'];
                         // @phpstan-ignore foreach.nonIterable
                         foreach ($permission_prefixes as $permission_prefix) {
                             if (in_array($permission_prefix, $rolePermissions[$key - 1]['permissions'])) {
                                 // @phpstan-ignore cast.string
-                                $permissions[] = (string) $permission_prefix . '_' . (string) $rolePermissions[$key - 1]['route_prefix'];
+                                $permissions[] = (string) $permission_prefix.'_'.(string) $rolePermissions[$key - 1]['route_prefix'];
                             }
                         }
                     }
@@ -89,8 +91,6 @@ class RoleRequest extends FormRequest
 
     /**
      * Get the role name of the authenticated user.
-     *
-     * @return string
      */
     private function getRoleName(): string
     {

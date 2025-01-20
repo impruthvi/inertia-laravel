@@ -8,22 +8,22 @@ use App\Interfaces\RoleInterface;
 use App\Models\Role;
 use App\Pipelines\Role\SearchPipeline;
 use App\Pipelines\Role\SortPipeline;
-use Illuminate\Support\Str;
-use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
+use Spatie\Permission\Models\Permission;
 
-class RoleRepository implements RoleInterface
+final class RoleRepository implements RoleInterface
 {
-
     /**
-     * @param array<int, string> $select
-     * @param array<string, mixed> $filters
-     * @param bool $paginate
-     * @return LengthAwarePaginator<Role>|Collection<int, Role>|null
+     * @param  array<int, string>  $select
+     * @param  array<string, mixed>  $filters
+     * @param  bool  $paginate
+     * @return LengthAwarePaginator<Role>|Collection<int, Role>
      */
-    public function get(array $select = ['id', 'name', 'display_name', 'guard_name', 'portal', 'is_common_role'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null
+    public function get(array $select = ['id', 'name', 'display_name', 'guard_name', 'portal', 'is_common_role'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection
     {
         // Start building the query
         $query = Role::select($select);
@@ -36,7 +36,6 @@ class RoleRepository implements RoleInterface
             ])
             ->thenReturn();
 
-
         /** @var \Illuminate\Database\Eloquent\Builder<Role> $roles */
         $roles->excludeSuperRole();
 
@@ -48,16 +47,16 @@ class RoleRepository implements RoleInterface
     }
 
     /**
-     * @param array<mixed> $attributes
-     * @return Role
-     * @throws \InvalidArgumentException if permissions are not iterable
+     * @param  array<mixed>  $attributes
+     *
+     * @throws InvalidArgumentException if permissions are not iterable
      */
     public function store(array $attributes): Role
     {
         $role = Role::create(['name' => (string) Str::uuid(), 'display_name' => $attributes['display_name']]);
         // Validate 'permissions' key
-        if (!isset($attributes['permissions']) || !is_array($attributes['permissions'])) {
-            throw new \InvalidArgumentException("The 'permissions' attribute must be an array.");
+        if (! isset($attributes['permissions']) || ! is_array($attributes['permissions'])) {
+            throw new InvalidArgumentException("The 'permissions' attribute must be an array.");
         }
         foreach ($attributes['permissions'] as $permissionName) {
             $permission = Permission::updateOrCreate(['name' => $permissionName]);
@@ -68,26 +67,20 @@ class RoleRepository implements RoleInterface
         return $role;
     }
 
-
-    /**
-     * @param string $id
-     * @return Role|null
-     */
     public function find(string $id): ?Role
     {
         // return Role::with(['favorite', 'permissions'])->visibility()->withTrashed()->find($id);
         return Role::find($id);
     }
+
     /**
-     * @param string $id
-     * @param array<mixed> $attributes
-     * @return bool
+     * @param  array<mixed>  $attributes
      */
     public function update(string $id, array $attributes): bool
     {
         $role = $this->find($id);
 
-        if (!$role) {
+        if (! $role) {
             // Handle the case when the role is not found
             return false; // Or throw an exception
         }
@@ -101,11 +94,6 @@ class RoleRepository implements RoleInterface
         return $role->update(['display_name' => $attributes['display_name']]) > 0;
     }
 
-
-    /**
-     * @param string $id
-     * @return bool
-     */
     public function delete(string $id): bool
     {
         // return Role::withTrashed()->findOrFail($id)->delete() > 0;

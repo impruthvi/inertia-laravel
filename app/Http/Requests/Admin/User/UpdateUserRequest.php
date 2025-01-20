@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Admin\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateUserRequest extends FormRequest
+final class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +24,9 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => ["required", "string", "max:255", 'min:3'],
+            'name' => ['required', 'string', 'max:255', 'min:3'],
             // @phpstan-ignore-next-line
-            "email" => ["required", "string", "lowercase", "email", "max:255", "unique:users," . $this->id],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,'.$this->id],
         ];
     }
 }

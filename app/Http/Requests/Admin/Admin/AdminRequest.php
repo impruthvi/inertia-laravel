@@ -7,7 +7,7 @@ namespace App\Http\Requests\Admin\Admin;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class AdminRequest extends FormRequest
+final class AdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,7 +21,6 @@ class AdminRequest extends FormRequest
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     *
      */
     public function rules(): array
     {
@@ -29,7 +28,7 @@ class AdminRequest extends FormRequest
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             // @phpstan-ignore-next-line
-            'email' => ['required', 'string', 'email:strict', 'max:255', 'unique:admins,email,' . $this->id],
+            'email' => ['required', 'string', 'email:strict', 'max:255', 'unique:admins,email,'.$this->id],
             'role_id' => ['required'],
             'custom_permission' => ['required', 'array'],
             'custom_permission.*' => ['required'],
@@ -48,8 +47,6 @@ class AdminRequest extends FormRequest
             'custom_permission.required' => trans('validation.required', ['attribute' => 'permission']),
         ];
     }
-
-
 
     public function validated($key = null, $default = null)
     {
