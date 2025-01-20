@@ -33,9 +33,9 @@ class RoleRequest extends FormRequest
     /**
      * Get custom messages for validator errors.
      *
-     * @return array
+     * @return array<string, string>
      */
-    public function messages()
+    public function messages(): array
     {
         return [
             'display_name.required' => trans('validation.required', ['attribute' => 'role name']),
@@ -55,16 +55,29 @@ class RoleRequest extends FormRequest
         ]);
     }
 
+    /**
+     * Get permissions based on the roles selected.
+     *
+     * @return array<string>
+     */
     private function getPermissions(): array
     {
         $permissions = [];
-        foreach ($this->roles as $key => $permission_prefixes) {
-            if ($permission_prefixes) {
-                if (array_key_exists(($key - 1), role_permissions($this->getRoleName()))) {
-                    array_push($permissions, 'access_' . role_permissions($this->getRoleName())[$key - 1]['route_prefix']);
-                    foreach ($permission_prefixes as $permission_prefix) {
-                        if (in_array($permission_prefix, role_permissions($this->getRoleName())[$key - 1]['permissions'])) {
-                            array_push($permissions, $permission_prefix . '_' . role_permissions($this->getRoleName())[$key - 1]['route_prefix']);
+
+        // Ensure $this->roles is an array and not empty before iterating
+        if (is_array($this->roles) && !empty($this->roles)) {
+            foreach ($this->roles as $key => $permission_prefixes) {
+                if ($permission_prefixes) {
+                    $rolePermissions = role_permissions($this->getRoleName());
+                    if (array_key_exists($key - 1, $rolePermissions)) {
+                        // Ensure correct string concatenation
+                        $permissions[] = 'access_' . (string) $rolePermissions[$key - 1]['route_prefix'];
+                        // @phpstan-ignore foreach.nonIterable
+                        foreach ($permission_prefixes as $permission_prefix) {
+                            if (in_array($permission_prefix, $rolePermissions[$key - 1]['permissions'])) {
+                                // @phpstan-ignore cast.string
+                                $permissions[] = (string) $permission_prefix . '_' . (string) $rolePermissions[$key - 1]['route_prefix'];
+                            }
                         }
                     }
                 }
@@ -74,16 +87,20 @@ class RoleRequest extends FormRequest
         return $permissions;
     }
 
-    private function getRoleName()
+    /**
+     * Get the role name of the authenticated user.
+     *
+     * @return string
+     */
+    private function getRoleName(): string
     {
+        /** @var \App\Models\Admin $user */
+        $user = Auth::user();
 
-        /**
-         * 
-         */
-        switch (Auth::user()->role) {
-
-            default:
-                return AdminRoleEnum::ADMIN->value;
+        if (isset($user->role)) {
+            return (string) $user->role;
         }
+
+        return AdminRoleEnum::ADMIN->value;
     }
 }

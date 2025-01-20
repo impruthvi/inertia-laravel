@@ -88,17 +88,31 @@ if (! function_exists('get_system_permissions')) {
 
 if (! function_exists('role_permissions')) {
     /**
-     * @param string $role
+     * Retrieve the permissions based on the role.
+     *
+     * @param string $role The role to fetch permissions for. Defaults to 'admin'.
      * @return array<int, array{id: int, name: string, permissions: array<string>, route_prefix: string}>
      */
     function role_permissions(string $role = 'admin'): array
     {
-        if ($role === 'admin') {
-            return admin_roles();
+        // Example: Check if role is valid or matches a known role type
+        $validRoles = ['admin']; // Add more roles as necessary
+
+        // If the role is not valid, return an empty array
+        if (!in_array($role, $validRoles, true)) {
+            return [];
         }
-        return [];
+
+        // Return permissions based on role
+        switch ($role) {
+            case 'admin':
+                return admin_roles();
+            default:
+                return [];
+        }
     }
 }
+
 
 if (! function_exists('create_permissions')) {
     /**
