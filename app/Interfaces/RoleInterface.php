@@ -20,7 +20,7 @@ interface RoleInterface
     public function get(array $select = [], array $filters = [], $paginate = true): LengthAwarePaginator|Collection|null;
 
     /**
-     * @param array<string, mixed> $attributes
+     * @param array<mixed> $attributes
      * @return Role
      */
     public function store(array $attributes): Role;

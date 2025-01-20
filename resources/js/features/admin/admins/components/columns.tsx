@@ -10,7 +10,7 @@ import { Admin } from "../types/admin";
 
 export const columns: ColumnDef<Admin>[] = [
     {
-        accessorKey: "name",
+        accessorKey: "first_name",
         header: ({ column }) => {
             return (
                 <Button
@@ -25,7 +25,7 @@ export const columns: ColumnDef<Admin>[] = [
             );
         },
         cell: ({ row }) => {
-            const name = row.original.name;
+            const name = row.original.full_name;
             return <p className="line-clamp-1">{name}</p>;
         },
     },

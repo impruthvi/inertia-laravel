@@ -21,7 +21,7 @@ class AdminRepository implements AdminInterface
      * @param bool $paginate
      * @return LengthAwarePaginator<Admin>|Collection<int, Admin>|null
      */
-    public function get(array $select = ['id', 'name', 'email', 'role', 'created_at'], array $filters = [], bool $paginate = true): LengthAwarePaginator|Collection|null
+    public function get(array $select = ['id', 'fist_name', 'last_name','email', 'role', 'created_at'], array $filters = [], bool $paginate = true): LengthAwarePaginator|Collection|null
     {
         $query = Admin::select($select);
         $recordPerPage = filter_var(config('utility.record_per_page', 10), FILTER_VALIDATE_INT) ?: 10;

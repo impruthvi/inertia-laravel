@@ -48,19 +48,17 @@ class RoleRepository implements RoleInterface
     }
 
     /**
-     * @param array<string, mixed> $attributes
+     * @param array<mixed> $attributes
      * @return Role
      * @throws \InvalidArgumentException if permissions are not iterable
      */
     public function store(array $attributes): Role
     {
         $role = Role::create(['name' => (string) Str::uuid(), 'display_name' => $attributes['display_name']]);
-
         // Validate 'permissions' key
         if (!isset($attributes['permissions']) || !is_array($attributes['permissions'])) {
             throw new \InvalidArgumentException("The 'permissions' attribute must be an array.");
         }
-
         foreach ($attributes['permissions'] as $permissionName) {
             $permission = Permission::updateOrCreate(['name' => $permissionName]);
             $role->givePermissionTo($permission);

@@ -66,7 +66,7 @@ class RoleController extends Controller
     {
         $this->authorize(get_ability('add'));
 
-        $this->roleInterface->store($request->validated());
+        $this->roleInterface->store($request->all());
 
         return redirect()->back()->with('success', 'Role created successfully');
     }

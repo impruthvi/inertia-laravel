@@ -37,7 +37,7 @@ class AdminController extends Controller
 
 
         $admins = $this->adminInterface->get(
-            select: ['id', 'name', 'email', 'role'],
+            select: ['id', 'first_name', 'last_name','email', 'role'],
             filters: $filters,
             paginate: true
         );

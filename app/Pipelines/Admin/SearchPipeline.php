@@ -27,7 +27,8 @@ class SearchPipeline
 
         if (!empty($searchKeyword) && is_string($searchKeyword)) {
             $roles->where(function (Builder $q) use ($searchKeyword) {
-                $q->where('name', 'like', '%' . $searchKeyword . '%')
+                $q->where('first_name', 'like', '%' . $searchKeyword . '%')
+                ->orWhere('last_name', 'like', '%' . $searchKeyword . '%')
                     ->orWhere('email', 'like', '%' . $searchKeyword . '%')
                     ->orWhere('role', 'like', '%' . $searchKeyword . '%');
             });

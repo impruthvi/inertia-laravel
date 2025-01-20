@@ -36,14 +36,13 @@ class Admin extends Authenticatable
         'last_name',
         'role',
         'role_id',
-        'name',
         'email',
         'password',
         'created_by',
         'updated_by',
     ];
 
-    protected $appends = ['access_permissions', 'custom_permissions'];
+    protected $appends = ['access_permissions', 'custom_permissions', 'full_name'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -137,6 +136,10 @@ class Admin extends Authenticatable
         return $convertToStrings($rolePermissions);
     }
 
+    public function getFullNameAttribute(): string
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
 
 
 
