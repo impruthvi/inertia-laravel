@@ -21,8 +21,9 @@ final class Admin extends Authenticatable
 
     public const ADMIN_DEFAULT_PASSWORD = 'Admin@123';
 
-    /** @var string */
-    protected $guard = 'admin';
+
+    // @phpstan-ignore-next-line
+    private string $guard = 'admin';
 
     /**
      * The attributes that are mass assignable.
@@ -76,24 +77,16 @@ final class Admin extends Authenticatable
          * @param  \Illuminate\Support\Collection<TKey, TValue>  $collection
          * @return array<string>
          */
-        $convertToStrings = function (\Illuminate\Support\Collection $collection): array {
-            return $collection
-                ->pluck('name')
-                /** @var \Illuminate\Support\Collection<int, mixed> $collection */
-                ->filter(function (mixed $item): bool {
-                    return $item !== null;
-                })
-                /** @var \Illuminate\Support\Collection<int, mixed> $collection */
-                ->map(function (mixed $item): string {
-                    return is_string($item) ? $item : '';
-                })
-                /** @var \Illuminate\Support\Collection<int, string> $collection */
-                ->filter(function (string $item): bool {
-                    return $item !== '';
-                })
-                ->values()
-                ->toArray();
-        };
+        $convertToStrings = (fn(\Illuminate\Support\Collection $collection): array => $collection
+            ->pluck('name')
+            /** @var \Illuminate\Support\Collection<int, mixed> $collection */
+            ->filter(fn(mixed $item): bool => $item !== null)
+            /** @var \Illuminate\Support\Collection<int, mixed> $collection */
+            ->map(fn(mixed $item): string => is_string($item) ? $item : '')
+            /** @var \Illuminate\Support\Collection<int, string> $collection */
+            ->filter(fn(string $item): bool => $item !== '')
+            ->values()
+            ->toArray());
 
         /**
          * @var \Illuminate\Support\Collection<int, \Spatie\Permission\Models\Permission>
@@ -151,14 +144,10 @@ final class Admin extends Authenticatable
     {
         $user = Auth::user();
 
-        if ($user instanceof self) {
-            switch ($user->role) {
-                case AdminRoleEnum::ADMIN->value:
-                    $query->whereHas('createdBy', function (Builder $query) {
-                        $query->where('role', AdminRoleEnum::ADMIN->value);
-                    });
-                    break;
-            }
+        if ($user instanceof self && $user->role === AdminRoleEnum::ADMIN->value) {
+            $query->whereHas('createdBy', function (Builder $query): void {
+                $query->where('role', AdminRoleEnum::ADMIN->value);
+            });
         }
     }
 

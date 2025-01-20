@@ -16,7 +16,7 @@ use Inertia\Response;
 
 final class RoleController extends Controller
 {
-    public function __construct(protected RoleInterface $roleInterface) {}
+    public function __construct(private readonly RoleInterface $roleInterface) {}
 
     /**
      * Display a listing of the resource.
@@ -116,7 +116,7 @@ final class RoleController extends Controller
 
         $role = $this->roleInterface->find($id);
 
-        if (empty($role)) {
+        if (!$role instanceof \App\Models\Role) {
             return redirect()->back()->with('error', 'Role not found');
         }
         $this->roleInterface->update((string) $role->id, $request->all());

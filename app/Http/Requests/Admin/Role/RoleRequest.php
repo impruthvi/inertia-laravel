@@ -67,18 +67,18 @@ final class RoleRequest extends FormRequest
         $permissions = [];
 
         // Ensure $this->roles is an array and not empty before iterating
-        if (is_array($this->roles) && ! empty($this->roles)) {
+        if (is_array($this->roles) && $this->roles !== []) {
             foreach ($this->roles as $key => $permission_prefixes) {
                 if ($permission_prefixes) {
                     $rolePermissions = role_permissions($this->getRoleName());
                     if (array_key_exists($key - 1, $rolePermissions)) {
                         // Ensure correct string concatenation
-                        $permissions[] = 'access_'.(string) $rolePermissions[$key - 1]['route_prefix'];
+                        $permissions[] = 'access_'.$rolePermissions[$key - 1]['route_prefix'];
                         // @phpstan-ignore foreach.nonIterable
                         foreach ($permission_prefixes as $permission_prefix) {
                             if (in_array($permission_prefix, $rolePermissions[$key - 1]['permissions'])) {
-                                // @phpstan-ignore cast.string
-                                $permissions[] = (string) $permission_prefix.'_'.(string) $rolePermissions[$key - 1]['route_prefix'];
+                                // @phpstan-ignore-next-line
+                                $permissions[] = $permission_prefix.'_'.$rolePermissions[$key - 1]['route_prefix'];
                             }
                         }
                     }
@@ -97,7 +97,7 @@ final class RoleRequest extends FormRequest
         /** @var \App\Models\Admin $user */
         $user = Auth::user();
 
-        if (isset($user->role)) {
+        if (property_exists($user, 'role') && $user->role !== null) {
             return (string) $user->role;
         }
 

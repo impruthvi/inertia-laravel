@@ -18,7 +18,7 @@ use Inertia\Response;
 final class UserController extends Controller
 {
     public function __construct(
-        protected UserInterface $userInterface
+        private readonly UserInterface $userInterface
     ) {}
 
     /**

@@ -20,8 +20,8 @@ final class AdminFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name' => fake()->word(1),
-            'last_name' => fake()->word(1),
+            'first_name' => fake()->word(),
+            'last_name' => fake()->word(),
             'email' => fake()->unique()->safeEmail(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),

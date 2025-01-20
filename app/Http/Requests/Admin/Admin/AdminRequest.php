@@ -56,12 +56,10 @@ final class AdminRequest extends FormRequest
         $user = Auth::user();
         $validateData = data_get($this->validator->validated(), $key, $default);
 
-        $validateData = (array) $validateData + [
+        return (array) $validateData + [
             'role' => $user->role,
             // @phpstan-ignore-next-line
             'custom_permissions' => array_to_permission($this->custom_permission, $user->role),
         ];
-
-        return $validateData;
     }
 }

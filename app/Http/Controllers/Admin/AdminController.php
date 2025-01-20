@@ -17,8 +17,8 @@ use Inertia\Response;
 final class AdminController extends Controller
 {
     public function __construct(
-        protected RoleInterface $roleInterface,
-        protected AdminInterface $adminInterface
+        private readonly RoleInterface $roleInterface,
+        private readonly AdminInterface $adminInterface
     ) {}
 
     /**

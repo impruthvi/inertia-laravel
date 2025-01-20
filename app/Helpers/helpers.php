@@ -55,7 +55,7 @@ if (! function_exists('get_ability')) {
             return '';
         }
 
-        $routeNameArray = explode('.', $routeName);
+        $routeNameArray = explode('.', (string) $routeName);
         $count = count($routeNameArray);
 
         return match ($count) {
@@ -104,12 +104,9 @@ if (! function_exists('role_permissions')) {
         }
 
         // Return permissions based on role
-        switch ($role) {
-            case 'admin':
-                return admin_roles();
-            default:
-                return [];
-        }
+        return match ($role) {
+            'admin' => admin_roles(),
+        };
     }
 }
 
@@ -136,7 +133,7 @@ if (! function_exists('permission_to_array')) {
      */
     function permission_to_array(array $permissions, string $role = 'admin'): array
     {
-        if (empty($permissions)) {
+        if ($permissions === []) {
             return [];
         }
 
@@ -177,7 +174,7 @@ if (! function_exists('array_to_permission')) {
      */
     function array_to_permission(array $permissions, string $role = 'admin'): array
     {
-        if (empty($permissions)) {
+        if ($permissions === []) {
             return [];
         }
 

@@ -13,7 +13,7 @@ final class SearchPipeline
     /**
      * @param  array<string, mixed>  $filter
      */
-    public function __construct(protected array $filter) {}
+    public function __construct(private array $filter) {}
 
     /**
      * @template TModel of Model
@@ -29,8 +29,8 @@ final class SearchPipeline
             ? $this->filter['search']
             : null;
 
-        if (! empty($search_keyword)) {
-            $roles->where(function ($q) use ($search_keyword) {
+        if ($search_keyword !== null && $search_keyword !== '' && $search_keyword !== '0') {
+            $roles->where(function ($q) use ($search_keyword): void {
                 // Perform the search query
                 $q->where('display_name', 'like', '%'.$search_keyword.'%');
             });

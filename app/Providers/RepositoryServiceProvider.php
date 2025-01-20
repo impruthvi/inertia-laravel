@@ -17,7 +17,7 @@ final class RepositoryServiceProvider extends ServiceProvider
     /**
      * Register services.
      */
-    public function register()
+    public function register(): void
     {
         $this->app->bind(UserInterface::class, UserRepository::class);
         $this->app->bind(RoleInterface::class, RoleRepository::class);

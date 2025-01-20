@@ -28,7 +28,7 @@ final class UniqueAdminRoleName implements ValidationRule
             $roleQuery = Role::query();
 
             $roleQuery->where('display_name', $value)
-                ->whereHas('createdBy', function (Builder $query) {
+                ->whereHas('createdBy', function (Builder $query): void {
                     $query->where('role', AdminRoleEnum::ADMIN->value);
                 });
 

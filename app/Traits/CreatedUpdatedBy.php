@@ -32,7 +32,7 @@ trait CreatedUpdatedBy
      */
     public static function bootCreatedUpdatedBy(): void
     {
-        static::creating(function (Model $model) {
+        static::creating(function (Model $model): void {
             $adminId = Auth::guard('admin')->id();
 
             if (! isset($model->attributes['created_by'])) {
@@ -44,7 +44,7 @@ trait CreatedUpdatedBy
             }
         });
 
-        static::updating(function (Model $model) {
+        static::updating(function (Model $model): void {
             if (! isset($model->attributes['updated_by'])) {
                 $model->setAttribute('updated_by', Auth::guard('admin')->id());
             }

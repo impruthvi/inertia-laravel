@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('admins', function (Blueprint $table) {
+        Schema::table('admins', function (Blueprint $table): void {
             $table->foreignId('role_id')->nullable()->constrained('roles')->onDelete('SET NULL');
         });
     }
@@ -23,7 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('admins', function (Blueprint $table) {
+        Schema::table('admins', function (Blueprint $table): void {
             $table->dropForeign(['role_id']);
             $table->dropColumn('role_id');
         });

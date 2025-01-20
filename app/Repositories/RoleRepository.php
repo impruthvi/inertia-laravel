@@ -80,7 +80,7 @@ final class RoleRepository implements RoleInterface
     {
         $role = $this->find($id);
 
-        if (! $role) {
+        if (!$role instanceof \App\Models\Role) {
             // Handle the case when the role is not found
             return false; // Or throw an exception
         }

@@ -8,12 +8,12 @@ use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-final class SortPipeline
+final readonly class SortPipeline
 {
     /**
      * @param  array<string, mixed>  $filter
      */
-    public function __construct(protected array $filter) {}
+    public function __construct(private array $filter) {}
 
     /**
      * @template TModel of Model
