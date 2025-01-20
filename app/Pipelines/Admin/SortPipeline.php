@@ -3,27 +3,42 @@
 namespace App\Pipelines\Admin;
 
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class SortPipeline
 {
-    public function __construct(protected $filter) {}
+    /**
+     * @param array<string, mixed> $filter
+     */
+    public function __construct(protected array $filter) {}
 
-    public function handle($users, Closure $next)
+    /**
+     * @template TModel of Model
+     * @param Builder<TModel> $roles
+     * @param Closure(Builder<TModel>): Builder<TModel> $next
+     * @return Builder<TModel>
+     */
+    public function handle(Builder $roles, Closure $next): Builder
     {
         $filter = $this->filter;
-        if (! empty($filter['sort'])) {
-            $allowedSortFields = ['name', 'email', 'role','created_at'];
+
+        if (!empty($filter['sort']) && is_array($filter['sort'])) {
+            $allowedSortFields = ['name', 'email', 'role', 'created_at'];
             $allowedSortDirections = ['asc', 'desc'];
 
             foreach ($filter['sort'] as $field => $direction) {
-                if (in_array($field, $allowedSortFields) && in_array(strtolower($direction), $allowedSortDirections)) {
-                    $users->orderBy($field, $direction);
+                if (
+                    is_string($field) && in_array($field, $allowedSortFields, true) &&
+                    is_string($direction) && in_array(strtolower($direction), $allowedSortDirections, true)
+                ) {
+                    $roles->orderBy($field, strtolower($direction));
                 }
             }
         } else {
-            $users->orderBy('id');
+            $roles->orderBy('id');
         }
 
-        return $next($users);
+        return $next($roles);
     }
 }

@@ -3,25 +3,34 @@
 namespace App\Pipelines\Admin;
 
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class SearchPipeline
 {
-    public function __construct(protected $filter) {}
+    /**
+     * @param array<string, mixed> $filter
+     */
+    public function __construct(protected array $filter) {}
 
-    public function handle($users, Closure $next)
+    /**
+     * @template TModel of Model
+     * @param Builder<TModel> $roles
+     * @param Closure(Builder<TModel>): Builder<TModel> $next
+     * @return Builder<TModel>
+     */
+    public function handle(Builder $roles, Closure $next): Builder
     {
-        $search_keyword = isset($this->filter['search'])
-            ? $this->filter['search']
-            : null;
+        $searchKeyword = $this->filter['search'] ?? null;
 
-        if (! empty($search_keyword)) {
-            $users->where(function ($q) use ($search_keyword) {
-                $q->where('name', 'like', '%' . $search_keyword . '%')
-                    ->orWhere('email', 'like', '%' . $search_keyword . '%')
-                    ->orWhere('role', 'like', '%' . $search_keyword . '%');
+        if (!empty($searchKeyword) && is_string($searchKeyword)) {
+            $roles->where(function (Builder $q) use ($searchKeyword) {
+                $q->where('name', 'like', '%' . $searchKeyword . '%')
+                    ->orWhere('email', 'like', '%' . $searchKeyword . '%')
+                    ->orWhere('role', 'like', '%' . $searchKeyword . '%');
             });
         }
 
-        return $next($users);
+        return $next($roles);
     }
 }

@@ -3,21 +3,36 @@
 namespace App\Pipelines\Role;
 
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class SortPipeline
 {
-    public function __construct(protected $filter) {}
+    /**
+     * @param array<string, mixed> $filter
+     */
+    public function __construct(protected array $filter) {}
 
-    public function handle($roles, Closure $next)
+    /**
+     * @template TModel of Model
+     * @param Builder<TModel> $roles
+     * @param Closure(Builder<TModel>): Builder<TModel> $next
+     * @return Builder<TModel>
+     */
+    public function handle(Builder $roles, Closure $next): Builder
     {
         $filter = $this->filter;
-        if (! empty($filter['sort'])) {
+
+        if (!empty($filter['sort']) && is_array($filter['sort'])) {
             $allowedSortFields = ['display_name'];
             $allowedSortDirections = ['asc', 'desc'];
 
             foreach ($filter['sort'] as $field => $direction) {
-                if (in_array($field, $allowedSortFields) && in_array(strtolower($direction), $allowedSortDirections)) {
-                    $roles->orderBy($field, $direction);
+                if (
+                    is_string($field) && in_array($field, $allowedSortFields, true) &&
+                    is_string($direction) && in_array(strtolower($direction), $allowedSortDirections, true)
+                ) {
+                    $roles->orderBy($field, strtolower($direction));
                 }
             }
         } else {

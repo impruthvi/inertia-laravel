@@ -3,19 +3,32 @@
 namespace App\Pipelines\Role;
 
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class SearchPipeline
 {
-    public function __construct(protected $filter) {}
+    /**
+     * @param array<string, mixed> $filter
+     */
+    public function __construct(protected array $filter) {}
 
-    public function handle($roles, Closure $next)
+    /**
+     * @template TModel of Model
+     * @param Builder<TModel> $roles
+     * @param Closure(Builder<TModel>): Builder<TModel> $next
+     * @return Builder<TModel>
+     */
+    public function handle(Builder $roles, Closure $next): Builder
     {
-        $search_keyword = isset($this->filter['search'])
+        // Ensure 'search' is a string if set
+        $search_keyword = isset($this->filter['search']) && is_string($this->filter['search'])
             ? $this->filter['search']
             : null;
 
-        if (! empty($search_keyword)) {
+        if (!empty($search_keyword)) {
             $roles->where(function ($q) use ($search_keyword) {
+                // Perform the search query
                 $q->where('display_name', 'like', '%' . $search_keyword . '%');
             });
         }
