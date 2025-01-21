@@ -116,7 +116,7 @@ final class RoleController extends Controller
 
         $role = $this->roleInterface->find($id);
 
-        if (!$role instanceof \App\Models\Role) {
+        if (! $role instanceof \App\Models\Role) {
             return redirect()->back()->with('error', 'Role not found');
         }
         $this->roleInterface->update((string) $role->id, $request->all());

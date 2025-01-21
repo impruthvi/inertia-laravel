@@ -21,10 +21,6 @@ final class Admin extends Authenticatable
 
     public const ADMIN_DEFAULT_PASSWORD = 'Admin@123';
 
-
-    // @phpstan-ignore-next-line
-    private string $guard = 'admin';
-
     /**
      * The attributes that are mass assignable.
      *
@@ -53,6 +49,9 @@ final class Admin extends Authenticatable
         'remember_token',
     ];
 
+    // @phpstan-ignore-next-line
+    private string $guard = 'admin';
+
     /**
      * @return BelongsTo<Admin, $this>
      */
@@ -77,14 +76,14 @@ final class Admin extends Authenticatable
          * @param  \Illuminate\Support\Collection<TKey, TValue>  $collection
          * @return array<string>
          */
-        $convertToStrings = (fn(\Illuminate\Support\Collection $collection): array => $collection
+        $convertToStrings = (fn (\Illuminate\Support\Collection $collection): array => $collection
             ->pluck('name')
             /** @var \Illuminate\Support\Collection<int, mixed> $collection */
-            ->filter(fn(mixed $item): bool => $item !== null)
+            ->filter(fn (mixed $item): bool => $item !== null)
             /** @var \Illuminate\Support\Collection<int, mixed> $collection */
-            ->map(fn(mixed $item): string => is_string($item) ? $item : '')
+            ->map(fn (mixed $item): string => is_string($item) ? $item : '')
             /** @var \Illuminate\Support\Collection<int, string> $collection */
-            ->filter(fn(string $item): bool => $item !== '')
+            ->filter(fn (string $item): bool => $item !== '')
             ->values()
             ->toArray());
 
