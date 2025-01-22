@@ -69,6 +69,7 @@
         "lint": "pint",
         "refactor": "rector",
         "test:type-coverage": "pest --type-coverage --min=100",
+        "test:code-coverage-html": "pest --coverage-html coverage/",
         "test:typos": "peck",
         "test:lint": "pint --test",
         "test:unit": "pest --parallel --coverage --exactly=100",
