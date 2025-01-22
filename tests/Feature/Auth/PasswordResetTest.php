@@ -96,17 +96,15 @@ final class PasswordResetTest extends TestCase
     public function test_validation_exception_password_link_can_be_requested(): void
     {
 
+        $response = $this->post('/forgot-password', ['email' => 'test@gmail.com']);
 
-        $response = $this->post('/forgot-password', ['email' => "test@gmail.com"]);
-        
         // Assert that the response is redirected back
         $response->assertStatus(302);
 
-    // Assert that the response contains the validation error
+        // Assert that the response contains the validation error
         $response->assertSessionHasErrors([
             'email' => trans('passwords.user'),
         ]);
-        
-    }
 
+    }
 }
