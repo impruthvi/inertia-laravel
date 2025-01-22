@@ -40,7 +40,7 @@ final class EmailVerificationTest extends TestCase
 
         Event::assertDispatched(Verified::class);
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
-        $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+        $response->assertRedirect(route('dashboard', absolute: false) . '?verified=1');
     }
 
     public function test_email_is_not_verified_with_invalid_hash(): void
@@ -56,5 +56,48 @@ final class EmailVerificationTest extends TestCase
         $this->actingAs($user)->get($verificationUrl);
 
         $this->assertFalse($user->fresh()->hasVerifiedEmail());
+    }
+
+    public function test_email_already_verified(): void
+    {
+        $user = User::factory()->create();
+        $response = $this->actingAs($user)->get('/verify-email');
+
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_email_already_verified_redirect_to_dashboard(): void
+    {
+        $user = User::factory()->create();
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+
+        $response = $this->actingAs($user)->get($verificationUrl);
+
+        $response->assertRedirect(route('dashboard', absolute: false) . '?verified=1');
+    }
+
+    public function test_email_verification_link_can_be_sent(): void
+    {
+
+        $user = User::factory()->unverified()->create();
+
+        $response = $this->actingAs($user)->post('/email/verification-notification');
+
+        $response->assertRedirect();
+    }
+
+    public function test_email_already_verified_for_email_notification(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post('/email/verification-notification');
+        $response = $this->actingAs($user)->post('/email/verification-notification');
+
+        $response->assertRedirect(route('dashboard', absolute: false));
     }
 }

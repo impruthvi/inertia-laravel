@@ -72,4 +72,41 @@ final class PasswordResetTest extends TestCase
             return true;
         });
     }
+
+    public function test_validation_exception_with_invalid_email(): void
+    {
+
+        // Attempt to reset password with an email that doesn't exist
+        $response = $this->post('/reset-password', [
+            'token' => 'invalid-token',
+            'email' => 'nonexistent@example.com',
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+        ]);
+
+        // Assert that the response is redirected back
+        $response->assertStatus(302);
+
+        // Assert that the response contains the validation error
+        $response->assertSessionHasErrors([
+            'email' => trans('passwords.user'),
+        ]);
+    }
+
+    public function test_validation_exception_password_link_can_be_requested(): void
+    {
+
+
+        $response = $this->post('/forgot-password', ['email' => "test@gmail.com"]);
+        
+        // Assert that the response is redirected back
+        $response->assertStatus(302);
+
+    // Assert that the response contains the validation error
+        $response->assertSessionHasErrors([
+            'email' => trans('passwords.user'),
+        ]);
+        
+    }
+
 }
