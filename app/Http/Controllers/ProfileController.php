@@ -18,14 +18,13 @@ final class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): Response|RedirectResponse
+    public function edit(Request $request): Response
     {
-        $user = $request->user();
 
-        // Check if user is authenticated
-        if (! $user) {
-            return redirect()->route('login');
-        }
+        /**
+         * @var \App\Models\User $user
+         */
+        $user = $request->user();
 
         return Inertia::render('Profile/Edit', [
             // @phpstan-ignore-next-line
@@ -39,12 +38,10 @@ final class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        /**
+         * @var \App\Models\User $user
+         */
         $user = $request->user();
-
-        // Check if user is authenticated
-        if (! $user) {
-            return redirect()->route('login');
-        }
 
         $user->fill($request->validated());
 
@@ -63,12 +60,10 @@ final class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        /**
+         * @var \App\Models\User $user
+         */
         $user = $request->user();
-
-        // Check if user is authenticated
-        if (! $user) {
-            return redirect()->route('login');
-        }
 
         $request->validate([
             'password' => ['required', 'current_password'],
