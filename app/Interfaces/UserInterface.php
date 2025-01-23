@@ -34,7 +34,7 @@ interface UserInterface
     /**
      * @param  array<string, mixed>  $data
      */
-    public function update(string $id, array $data): ?User;
+    public function update(User $user, array $data): bool;
 
     public function delete(string $id): bool;
 }

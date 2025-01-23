@@ -60,17 +60,9 @@ final class UserRepository implements UserInterface
     /**
      * @param  array<string, mixed>  $data
      */
-    public function update(string $id, array $data): ?User
+    public function update(User $user, array $data): bool
     {
-        $user = User::find($id);
-
-        if ($user) {
-            $user->update($data);
-
-            return $user;
-        }
-
-        return null;
+        return $user->update($data) > 0;
     }
 
     /**

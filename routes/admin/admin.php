@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->middleware('auth:admin')->as('admin.')->group(function () {
     // User routes
-    Route::resource('users', UserController::class);
+    Route::resource('users', UserController::class)->except('show', 'create');
 
     // Role routes
     Route::resource('roles', RoleController::class)->except('show');

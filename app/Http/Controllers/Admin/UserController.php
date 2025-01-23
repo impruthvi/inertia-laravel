@@ -52,14 +52,6 @@ final class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): void
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(CreateUserRequest $request): RedirectResponse
@@ -73,15 +65,7 @@ final class UserController extends Controller
             'password' => generatePassword(User::USER_DEFAULT_PASSWORD),
         ]);
 
-        return redirect()->back()->with('success', 'User created successfully');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id): void
-    {
-        //
+        return redirect()->back()->with('success', trans('messages.created', ['entity' => 'User']));
     }
 
     /**
@@ -92,6 +76,10 @@ final class UserController extends Controller
         // Get user
         $user = $this->userInterface->find($id);
         $this->authorize(get_ability('edit'), $user);
+
+        if (! $user instanceof User) {
+            return response()->json(['error' => true, 'message' => trans('messages.not_found', ['entity' => 'User'])]);
+        }
 
         // Return response in JSON
         return response()->json(['error' => false, 'data' => $user]);
@@ -106,9 +94,13 @@ final class UserController extends Controller
 
         $this->authorize(get_ability('edit'), $user);
 
-        $this->userInterface->update($id, $request->validated());
+        if (! $user instanceof User) {
+            return redirect()->back()->with('error', trans('messages.not_found', ['entity' => 'User']));
+        }
 
-        return redirect()->back()->with('success', 'User Updated successfully');
+        $this->userInterface->update($user, $request->validated());
+
+        return redirect()->back()->with('success', trans('messages.updated', ['entity' => 'User']));
     }
 
     /**
@@ -119,6 +111,6 @@ final class UserController extends Controller
         $this->authorize(get_ability('delete'));
         $this->userInterface->delete($id);
 
-        return redirect()->back()->with('success', 'User deleted successfully');
+        return redirect()->back()->with('success', trans('messages.deleted', ['entity' => 'User']));
     }
 }
