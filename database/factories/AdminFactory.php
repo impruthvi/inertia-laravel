@@ -32,6 +32,9 @@ final class AdminFactory extends Factory
             'password' => self::$password ??= Hash::make('password'),
             'email_verified_at' => now(),
             'remember_token' => Str::random(10),
+            'role_id' => RoleFactory::new(),
+            'created_by' => 1,
+            'updated_by' => 1,
         ];
     }
 }
