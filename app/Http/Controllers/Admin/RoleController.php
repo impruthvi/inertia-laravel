@@ -73,14 +73,6 @@ final class RoleController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id): void
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id): Response|RedirectResponse
@@ -119,7 +111,7 @@ final class RoleController extends Controller
         if (! $role instanceof \App\Models\Role) {
             return redirect()->back()->with('error', 'Role not found');
         }
-        $this->roleInterface->update((string) $role->id, $request->all());
+        $this->roleInterface->update($role, $request->all());
 
         return redirect()->back()->with('success', 'Role updated successfully');
     }

@@ -28,7 +28,7 @@ interface RoleInterface
     /**
      * @param  array<mixed>  $attributes
      */
-    public function update(string $id, array $attributes): bool;
+    public function update(Role $id, array $attributes): bool;
 
     public function delete(string $id): bool;
 }

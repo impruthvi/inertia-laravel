@@ -12,7 +12,7 @@ Route::prefix('admin')->middleware('auth:admin')->as('admin.')->group(function (
     Route::resource('users', UserController::class);
 
     // Role routes
-    Route::resource('roles', RoleController::class);
+    Route::resource('roles', RoleController::class)->except('show');
 
     // Admin routes
     Route::resource('admins', AdminController::class);

@@ -6,12 +6,13 @@ namespace App\Models;
 
 use App\Traits\CreatedUpdatedBy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Permission\Models\Role as SpatieRole;
 
 final class Role extends SpatieRole
 {
-    use CreatedUpdatedBy;
+    use CreatedUpdatedBy, HasFactory;
 
     public const SUPER_ADMIN = 'super_admin';
 

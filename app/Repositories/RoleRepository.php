@@ -54,10 +54,7 @@ final class RoleRepository implements RoleInterface
     public function store(array $attributes): Role
     {
         $role = Role::create(['name' => (string) Str::uuid(), 'display_name' => $attributes['display_name']]);
-        // Validate 'permissions' key
-        if (! isset($attributes['permissions']) || ! is_array($attributes['permissions'])) {
-            throw new InvalidArgumentException("The 'permissions' attribute must be an array.");
-        }
+    
         foreach ($attributes['permissions'] as $permissionName) {
             $permission = Permission::updateOrCreate(['name' => $permissionName]);
             $role->givePermissionTo($permission);
@@ -76,14 +73,8 @@ final class RoleRepository implements RoleInterface
     /**
      * @param  array<mixed>  $attributes
      */
-    public function update(string $id, array $attributes): bool
+    public function update($role, array $attributes): bool
     {
-        $role = $this->find($id);
-
-        if (! $role instanceof Role) {
-            // Handle the case when the role is not found
-            return false; // Or throw an exception
-        }
 
         // Sync permissions
         if (isset($attributes['permissions']) && is_array($attributes['permissions'])) {
