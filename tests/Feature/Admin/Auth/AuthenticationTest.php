@@ -2,56 +2,45 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Admin\Auth;
-
 use App\Models\Admin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-final class AuthenticationTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    public function test_login_screen_can_be_rendered(): void
-    {
-        $response = $this->get('/admin/login');
+test('login screen can be rendered', function () {
+    $this->get('/admin/login')
+        ->assertOk();
+});
 
-        $response->assertStatus(200);
-    }
+test('admin can authenticate using the login screen', function () {
+    $admin = Admin::factory()->create();
 
-    public function test_admin_can_authenticate_using_the_login_screen(): void
-    {
-        $admin = Admin::factory()->create();
+    $this->post('/admin/login', [
+        'email' => $admin->email,
+        'password' => 'password',
+    ])
+        ->assertRedirect(route('admin.dashboard', absolute: false));
 
-        $response = $this->post('/admin/login', [
-            'email' => $admin->email,
-            'password' => 'password',
-        ]);
+    $this->assertAuthenticated('admin');
+});
 
-        $this->assertAuthenticated('admin');
-        $response->assertRedirect(route('admin.dashboard', absolute: false));
-    }
+test('admins cannot authenticate with invalid password', function () {
+    $admin = Admin::factory()->create();
 
-    public function test_admins_can_not_authenticate_with_invalid_password(): void
-    {
-        $admin = Admin::factory()->create();
+    $this->post('/admin/login', [
+        'email' => $admin->email,
+        'password' => 'wrong-password',
+    ]);
 
-        $this->post('/admin/login', [
-            'email' => $admin->email,
-            'password' => 'wrong-password',
-        ]);
+    $this->assertGuest('admin');
+});
 
-        $this->assertGuest();
-    }
+test('admins can logout', function () {
+    $admin = Admin::factory()->create();
 
-    public function test_admins_can_logout(): void
-    {
-        $admin = Admin::factory()->create();
+    $this->actingAs($admin, 'admin')
+        ->post('/admin/logout')
+        ->assertRedirect('/admin/login');
 
-        $response = $this->actingAs($admin, 'admin')->post('/admin/logout');
-
-        $this->assertGuest('admin');
-
-        $response->assertRedirect('/admin/login');
-    }
-}
+    $this->assertGuest('admin');
+});

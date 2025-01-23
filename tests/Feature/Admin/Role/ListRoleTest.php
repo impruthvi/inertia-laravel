@@ -2,120 +2,86 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\RoleManagement\Role;
-
-use App\Enums\AdminRoleEnum;
-use App\Models\Admin;
 use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia;
-use Tests\TestCase;
+use Tests\Traits\SuperAdminHelper;
 
-final class ListRoleTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
+uses(SuperAdminHelper::class);
 
-    protected function setUp(): void
-    {
-        parent::setUp();
+beforeEach(function () {
+    $adminRole = Role::create([
+        'name' => Role::SUPER_ADMIN,
+        'display_name' => Role::SUPER_ADMIN,
+        'guard_name' => 'admin',
+    ]);
+    $defaultAdminPermissions = get_system_permissions(role_permissions('admin'));
+    create_permissions($defaultAdminPermissions, $adminRole);
+});
 
-        $adminRole = Role::create(['name' => Role::SUPER_ADMIN, 'display_name' => Role::SUPER_ADMIN, 'guard_name' => 'admin']);
-        $defaultAdminPermissions = get_system_permissions(role_permissions('admin'));
-        create_permissions($defaultAdminPermissions, $adminRole);
-    }
+test('redirects to login when accessing roles page without credentials', function () {
+    $this->get(route('admin.roles.index'))
+        ->assertFound()
+        ->assertRedirectToRoute('login');
+});
 
-    public function test_admin_cant_see_roles_page_with_invalid_credentials(): void
-    {
-        $response = $this->get(route('admin.roles.index'));
+test('displays roles page for admin with valid credentials', function () {
+    $admin = $this->createSuperAdminAndLogin();
 
-        $response->assertFound()
-            ->assertRedirectToRoute('login');
-    }
+    $this->actingAs($admin, 'admin')
+        ->get(route('admin.roles.index'))
+        ->assertOk();
+});
 
-    public function test_admin_can_see_role_page_with_valid_credentials(): void
-    {
-        $adminRole = Role::where('name', Role::SUPER_ADMIN)->first();
+test('paginates roles data correctly', function () {
+    $admin = $this->createSuperAdminAndLogin();
+    Role::factory(20)->create();
 
-        $admin = Admin::factory()->create([
-            'role_id' => $adminRole->id,
-            'role' => AdminRoleEnum::ADMIN->value,
-        ]);
+    $this->actingAs($admin, 'admin')
+        ->get(route('admin.roles.index'))
+        ->assertInertia(fn (AssertableInertia $page) => 
+            $page->has('roles.data', 10) // Default page size
+        );
 
-        $admin->assignRole($adminRole);
+    expect(Role::count())->toBe(21); // 20 created + 1 initial super admin role
+});
 
-        $response = $this->actingAs($admin, 'admin')->get(route('admin.roles.index'));
+test('displays roles on the second page with pagination', function () {
+    $admin = $this->createSuperAdminAndLogin();
+    Role::factory(20)->create();
 
-        $response->assertOk();
-    }
+    $this->actingAs($admin, 'admin')
+        ->get(route('admin.roles.index', ['page' => 2]))
+        ->assertInertia(fn (AssertableInertia $page) => 
+            $page->has('roles.data', 10) // Remaining 10 items
+        );
 
-    public function test_admin_can_get_paginated_roles_data(): void
-    {
-        $adminRole = Role::where('name', Role::SUPER_ADMIN)->first();
+    expect(Role::count())->toBe(21);
+});
 
-        $admin = Admin::factory()->create([
-            'role_id' => $adminRole->id,
-            'role' => AdminRoleEnum::ADMIN->value,
-        ]);
+test('searches for roles correctly', function () {
+    $admin = $this->createSuperAdminAndLogin();
 
-        $admin->assignRole($adminRole);
+    Role::create([
+        'name' => 'Super Admin',
+        'display_name' => 'Super Admin',
+        'created_by' => $admin->id,
+        'updated_by' => $admin->id,
+    ]);
 
-        Role::factory(20)->create();
+    Role::factory(20)->create();
 
-        $response = $this->actingAs($admin, 'admin')->get(route('admin.roles.index'));
-
-        $response->assertInertia(fn (AssertableInertia $page) => $page->has('roles.data', 10));
-
-        $this->assertDatabaseCount('roles', 21);
-    }
-
-    public function test_admin_can_get_role_data_with_paginated_url(): void
-    {
-        $adminRole = Role::where('name', Role::SUPER_ADMIN)->first();
-
-        $admin = Admin::factory()->create([
-            'role_id' => $adminRole->id,
-            'role' => AdminRoleEnum::ADMIN->value,
-        ]);
-
-        $admin->assignRole($adminRole);
-
-        Role::factory(20)->create();
-
-        $response = $this->actingAs($admin, 'admin')->get(route('admin.roles.index', ['page' => 2]));
-
-        $response->assertInertia(fn (AssertableInertia $page) => $page->has('roles.data', 10));
-
-        $this->assertDatabaseCount('roles', 21);
-    }
-
-    public function test_admin_can_search_role(): void
-    {
-        $adminRole = Role::where('name', Role::SUPER_ADMIN)->first();
-
-        $admin = Admin::factory()->create([
-            'role_id' => $adminRole->id,
-            'role' => AdminRoleEnum::ADMIN->value,
-        ]);
-
-        $admin->assignRole($adminRole);
-
-        Role::create([
-            'name' => 'Super Admin',
-            'display_name' => 'Super Admin',
-            'created_by' => $admin->id,
-            'updated_by' => $admin->id,
-        ]);
-
-        Role::factory(20)->create();
-
-        $getResponse = $this->actingAs($admin, 'admin')->get(route('admin.roles.index', [
-            'search' => 'Admin',
+    $this->actingAs($admin, 'admin')
+        ->get(route('admin.roles.index', [
+            'search' => 'Super',
             'sort' => [
                 'display_name' => 'asc',
             ],
-        ]));
-
-        $getResponse->assertOk()
-            ->assertInertia(fn (AssertableInertia $page) => $page->has('roles.data', 1));
-    }
-}
+        ]))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => 
+            $page->has('roles.data', 1) // Only one match for "Super Admin"
+                ->where('roles.data.0.display_name', 'Super Admin') // Verify match data
+        );
+});

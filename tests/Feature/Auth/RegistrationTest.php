@@ -2,32 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Auth;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-final class RegistrationTest extends TestCase
-{
-    use RefreshDatabase;
+use function Pest\Laravel\get;
+use function Pest\Laravel\post;
 
-    public function test_registration_screen_can_be_rendered(): void
-    {
-        $response = $this->get('/register');
+uses(RefreshDatabase::class)->group('auth');
 
-        $response->assertStatus(200);
-    }
+it('renders the registration screen', function () {
+    get('/register')
+        ->assertOk(); // Ensure that the registration page is accessible
+});
 
-    public function test_new_users_can_register(): void
-    {
-        $response = $this->post('/register', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
+it('allows new users to register successfully', function () {
+    post('/register', [
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ])
+        ->assertRedirect(route('dashboard', absolute: false)); // Check if the user is redirected to the dashboard after registration
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
-    }
-}
+    expect(auth()->check())->toBeTrue(); // Confirm that the user is authenticated
+});
