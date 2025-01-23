@@ -8,33 +8,15 @@ use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
+use Tests\Traits\SuperAdminHelper;
 
 uses(RefreshDatabase::class)->group('admin', 'roles');
+uses(SuperAdminHelper::class);
 
 beforeEach(function () {
-    $this->superAdmin = setupSuperAdminRole();
+    $this->superAdmin = $this->createSuperAdminAndLogin();
 });
 
-function setupSuperAdminRole()
-{
-    $adminRole = Role::create([
-        'name' => Role::SUPER_ADMIN,
-        'display_name' => Role::SUPER_ADMIN,
-        'guard_name' => 'admin',
-    ]);
-
-    $defaultAdminPermissions = get_system_permissions(role_permissions('admin'));
-    create_permissions($defaultAdminPermissions, $adminRole);
-
-    $admin = Admin::factory()->create([
-        'role_id' => $adminRole->id,
-        'role' => AdminRoleEnum::ADMIN->value,
-    ]);
-
-    $admin->assignRole($adminRole);
-
-    return $admin;
-}
 
 test('redirects to login when accessing role create page without credentials', function () {
     get(route('admin.roles.create'))
