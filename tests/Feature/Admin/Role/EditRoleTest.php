@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\RoleManagement\Role;
 
 use App\Enums\AdminRoleEnum;
@@ -9,15 +11,15 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
-class EditRoleTest extends TestCase
+final class EditRoleTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $adminRole = Role::create(['name'=> Role::SUPER_ADMIN,'display_name' => Role::SUPER_ADMIN, 'guard_name' => 'admin']);
+        $adminRole = Role::create(['name' => Role::SUPER_ADMIN, 'display_name' => Role::SUPER_ADMIN, 'guard_name' => 'admin']);
         $defaultAdminPermissions = get_system_permissions(role_permissions('admin'));
         create_permissions($defaultAdminPermissions, $adminRole);
     }

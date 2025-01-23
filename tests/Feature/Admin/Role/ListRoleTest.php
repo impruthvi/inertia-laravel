@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\RoleManagement\Role;
 
 use App\Enums\AdminRoleEnum;
@@ -9,11 +11,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
-class ListRoleTest extends TestCase
+final class ListRoleTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -46,7 +48,6 @@ class ListRoleTest extends TestCase
         $response->assertOk();
     }
 
-
     public function test_admin_can_get_paginated_roles_data(): void
     {
         $adminRole = Role::where('name', Role::SUPER_ADMIN)->first();
@@ -62,7 +63,7 @@ class ListRoleTest extends TestCase
 
         $response = $this->actingAs($admin, 'admin')->get(route('admin.roles.index'));
 
-        $response->assertInertia(fn(AssertableInertia $page) => $page->has('roles.data', 10));
+        $response->assertInertia(fn (AssertableInertia $page) => $page->has('roles.data', 10));
 
         $this->assertDatabaseCount('roles', 21);
     }
@@ -82,7 +83,7 @@ class ListRoleTest extends TestCase
 
         $response = $this->actingAs($admin, 'admin')->get(route('admin.roles.index', ['page' => 2]));
 
-        $response->assertInertia(fn(AssertableInertia $page) => $page->has('roles.data', 10));
+        $response->assertInertia(fn (AssertableInertia $page) => $page->has('roles.data', 10));
 
         $this->assertDatabaseCount('roles', 21);
     }
@@ -111,10 +112,10 @@ class ListRoleTest extends TestCase
             'search' => 'Admin',
             'sort' => [
                 'display_name' => 'asc',
-            ]
+            ],
         ]));
 
         $getResponse->assertOk()
-            ->assertInertia(fn(AssertableInertia $page) => $page->has('roles.data', 1));
+            ->assertInertia(fn (AssertableInertia $page) => $page->has('roles.data', 1));
     }
 }
