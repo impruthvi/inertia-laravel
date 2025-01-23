@@ -12,11 +12,20 @@ trait SuperAdminHelper
 {
     public function createSuperAdminAndLogin()
     {
-        $adminRole = Role::where('name', Role::SUPER_ADMIN)->first();
+        $adminRole = Role::create([
+            'name' => Role::SUPER_ADMIN,
+            'display_name' => Role::SUPER_ADMIN,
+            'guard_name' => 'admin',
+        ]);
+
+        $defaultAdminPermissions = get_system_permissions(role_permissions('admin'));
+        create_permissions($defaultAdminPermissions, $adminRole);
+
         $admin = Admin::factory()->create([
             'role_id' => $adminRole->id,
             'role' => AdminRoleEnum::ADMIN->value,
         ]);
+
         $admin->assignRole($adminRole);
 
         return $admin;

@@ -13,13 +13,7 @@ uses(RefreshDatabase::class);
 uses(SuperAdminHelper::class);
 
 beforeEach(function () {
-    $adminRole = Role::create([
-        'name' => Role::SUPER_ADMIN,
-        'display_name' => Role::SUPER_ADMIN,
-        'guard_name' => 'admin',
-    ]);
-    $defaultAdminPermissions = get_system_permissions(role_permissions('admin'));
-    create_permissions($defaultAdminPermissions, $adminRole);
+    $this->superAdmin = $this->createSuperAdminAndLogin();
 });
 
 function createTestRole($admin): Role
@@ -39,40 +33,43 @@ test('redirects to login when accessing role edit page without credentials', fun
 });
 
 test('shows role not found when editing a non-existent role', function () {
-    $admin = $this->createSuperAdminAndLogin();
 
-    actingAs($admin, 'admin')
+
+    actingAs($this->superAdmin, 'admin')
         ->get(route('admin.roles.edit', 1111))
         ->assertFound()
         ->assertSessionHas('error', __('messages.not_found', ['entity' => 'Role']));
 });
 
 test('allows admin to access the role edit page with valid credentials', function () {
-    $admin = $this->createSuperAdminAndLogin();
-    $role = createTestRole($admin);
 
-    actingAs($admin, 'admin')
+    $role = createTestRole($this->superAdmin);
+
+    actingAs($this->superAdmin, 'admin')
         ->get(route('admin.roles.edit', $role->id))
         ->assertOk()
-        ->assertInertia(fn (AssertableInertia $page) => 
-            $page->has('role', fn ($roleData) => 
+        ->assertInertia(
+            fn(AssertableInertia $page) =>
+            $page->has(
+                'role',
+                fn($roleData) =>
                 $roleData->where('id', $role->id)
-                         ->where('display_name', 'super_admin')
-                         ->etc()
+                    ->where('display_name', 'super_admin')
+                    ->etc()
             )
         );
 });
 
 test('updates role successfully with valid data', function () {
-    $admin = $this->createSuperAdminAndLogin();
-    $role = createTestRole($admin);
+
+    $role = createTestRole($this->superAdmin);
 
     $updatedData = [
         'display_name' => 'Updated Testing Role',
         'roles' => [1 => ['add', 'edit', 'view', 'delete']],
     ];
 
-    actingAs($admin, 'admin')
+    actingAs($this->superAdmin, 'admin')
         ->put(route('admin.roles.update', $role->id), $updatedData)
         ->assertFound()
         ->assertSessionHas('success', __('messages.updated', ['entity' => 'Role']))
@@ -82,9 +79,9 @@ test('updates role successfully with valid data', function () {
 });
 
 test('shows role not found when updating a non-existent role', function () {
-    $admin = $this->createSuperAdminAndLogin();
 
-    actingAs($admin, 'admin')
+
+    actingAs($this->superAdmin, 'admin')
         ->put(route('admin.roles.update', 1111), [
             'display_name' => 'Updated Testing Role',
             'roles' => [1 => ['add', 'edit', 'view', 'delete']],
@@ -94,10 +91,10 @@ test('shows role not found when updating a non-existent role', function () {
 });
 
 test('deletes a role successfully', function () {
-    $admin = $this->createSuperAdminAndLogin();
-    $role = createTestRole($admin);
 
-    actingAs($admin, 'admin')
+    $role = createTestRole($this->superAdmin);
+
+    actingAs($this->superAdmin, 'admin')
         ->delete(route('admin.roles.destroy', $role->id))
         ->assertFound()
         ->assertSessionHas('success', __('messages.deleted', ['entity' => 'Role']))
