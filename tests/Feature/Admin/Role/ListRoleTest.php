@@ -33,8 +33,7 @@ test('paginates roles data correctly', function () {
     $this->actingAs($this->superAdmin, 'admin')
         ->get(route('admin.roles.index'))
         ->assertInertia(
-            fn(AssertableInertia $page) =>
-            $page->has('roles.data', 10) // Default page size
+            fn (AssertableInertia $page) => $page->has('roles.data', 10) // Default page size
         );
 
     expect(Role::count())->toBe(21); // 20 created + 1 initial super admin role
@@ -46,8 +45,7 @@ test('displays roles on the second page with pagination', function () {
     $this->actingAs($this->superAdmin, 'admin')
         ->get(route('admin.roles.index', ['page' => 2]))
         ->assertInertia(
-            fn(AssertableInertia $page) =>
-            $page->has('roles.data', 10) // Remaining 10 items
+            fn (AssertableInertia $page) => $page->has('roles.data', 10) // Remaining 10 items
         );
 
     expect(Role::count())->toBe(21);
@@ -73,8 +71,7 @@ test('searches for roles correctly', function () {
         ]))
         ->assertOk()
         ->assertInertia(
-            fn(AssertableInertia $page) =>
-            $page->has('roles.data', 1) // Only one match for "Super Admin"
+            fn (AssertableInertia $page) => $page->has('roles.data', 1) // Only one match for "Super Admin"
                 ->where('roles.data.0.display_name', 'Super Admin') // Verify match data
         );
 });

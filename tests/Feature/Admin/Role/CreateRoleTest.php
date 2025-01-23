@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Enums\AdminRoleEnum;
-use App\Models\Admin;
 use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Traits\SuperAdminHelper;
 
 use function Pest\Laravel\get;
-use Tests\Traits\SuperAdminHelper;
 
 uses(RefreshDatabase::class)->group('admin', 'roles');
 uses(SuperAdminHelper::class);
@@ -16,7 +14,6 @@ uses(SuperAdminHelper::class);
 beforeEach(function () {
     $this->superAdmin = $this->createSuperAdminAndLogin();
 });
-
 
 test('redirects to login when accessing role create page without credentials', function () {
     get(route('admin.roles.create'))

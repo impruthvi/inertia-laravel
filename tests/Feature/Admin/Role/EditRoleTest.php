@@ -34,7 +34,6 @@ test('redirects to login when accessing role edit page without credentials', fun
 
 test('shows role not found when editing a non-existent role', function () {
 
-
     actingAs($this->superAdmin, 'admin')
         ->get(route('admin.roles.edit', 1111))
         ->assertFound()
@@ -49,11 +48,9 @@ test('allows admin to access the role edit page with valid credentials', functio
         ->get(route('admin.roles.edit', $role->id))
         ->assertOk()
         ->assertInertia(
-            fn(AssertableInertia $page) =>
-            $page->has(
+            fn (AssertableInertia $page) => $page->has(
                 'role',
-                fn($roleData) =>
-                $roleData->where('id', $role->id)
+                fn ($roleData) => $roleData->where('id', $role->id)
                     ->where('display_name', 'super_admin')
                     ->etc()
             )
@@ -79,7 +76,6 @@ test('updates role successfully with valid data', function () {
 });
 
 test('shows role not found when updating a non-existent role', function () {
-
 
     actingAs($this->superAdmin, 'admin')
         ->put(route('admin.roles.update', 1111), [
