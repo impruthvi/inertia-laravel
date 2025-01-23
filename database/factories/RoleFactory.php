@@ -22,7 +22,7 @@ final class RoleFactory extends Factory
     {
         return [
             'name' => Str::uuid(),
-            'display_name' => fake()->unique()->word(3),
+            'display_name' => fake()->unique()->word(),
             'created_by' => Admin::where('role', 'admin')->first(),
             'updated_by' => Admin::where('role', 'admin')->first(),
         ];

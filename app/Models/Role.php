@@ -12,6 +12,7 @@ use Spatie\Permission\Models\Role as SpatieRole;
 
 final class Role extends SpatieRole
 {
+    /** @use HasFactory<\Database\Factories\RoleFactory> */
     use CreatedUpdatedBy, HasFactory;
 
     public const SUPER_ADMIN = 'super_admin';
