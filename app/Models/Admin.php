@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
 
 final class Admin extends Authenticatable
@@ -141,7 +140,7 @@ final class Admin extends Authenticatable
      */
     public function scopeVisibility(Builder $query): void
     {
-        $user = Auth::user();
+        $user = auth('admin')->user();
 
         if ($user instanceof self && $user->role === AdminRoleEnum::ADMIN->value) {
             $query->whereHas('createdBy', function (Builder $query): void {

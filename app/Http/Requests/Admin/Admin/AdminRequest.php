@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Requests\Admin\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 final class AdminRequest extends FormRequest
 {
@@ -53,7 +52,7 @@ final class AdminRequest extends FormRequest
         /**
          * @var \App\Models\Admin $user
          */
-        $user = Auth::user();
+        $user = auth('admin')->user();
         $validateData = data_get($this->validator->validated(), $key, $default);
 
         return (array) $validateData + [

@@ -7,7 +7,6 @@ namespace App\Http\Requests\Admin\Role;
 use App\Enums\AdminRoleEnum;
 use App\Rules\UniqueAdminRoleName;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 final class RoleRequest extends FormRequest
 {
@@ -95,7 +94,7 @@ final class RoleRequest extends FormRequest
     private function getRoleName(): string
     {
         /** @var \App\Models\Admin $user */
-        $user = Auth::user();
+        $user = auth('admin')->user();
 
         if (property_exists($user, 'role') && $user->role !== null) {
             return (string) $user->role;

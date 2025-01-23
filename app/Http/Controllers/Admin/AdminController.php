@@ -63,7 +63,7 @@ final class AdminController extends Controller
         /**
          * @var \App\Models\Admin $user
          */
-        $user = Auth::user();
+        $user = auth('admin')->user();
 
         /**
          * @var \App\Models\Role | null $role
@@ -74,7 +74,7 @@ final class AdminController extends Controller
 
         $selectedPermissions = ($role)
             // @phpstan-ignore-next-line
-            ? permission_to_array($role->permissions->pluck('name')->toArray(), Auth::user()->role)
+            ? permission_to_array($role->permissions->pluck('name')->toArray(), auth('admin')->user()->role)
             : [];
 
         return Inertia::render('Admin/RoleManagement/Admin/Create', [
@@ -122,14 +122,14 @@ final class AdminController extends Controller
         /**
          * @var \App\Models\Admin $user
          */
-        $user = Auth::user();
+        $user = auth('admin')->user();
 
         // Ensure $role is not null before using it
         $role = $request->filled('role') && is_string($request->role)
             ? $this->roleInterface->find($request->role)
             : $admin;
         // @phpstan-ignore-next-line
-        $selectedPermissions = permission_to_array($role->permissions->pluck('name')->toArray(), Auth::user()->role);
+        $selectedPermissions = permission_to_array($role->permissions->pluck('name')->toArray(), auth('admin')->user()->role);
 
         return Inertia::render('Admin/RoleManagement/Admin/Update', [
             'roles' => $roles,

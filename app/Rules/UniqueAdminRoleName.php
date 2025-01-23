@@ -9,7 +9,6 @@ use App\Models\Role;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 
 final class UniqueAdminRoleName implements ValidationRule
 {
@@ -21,7 +20,7 @@ final class UniqueAdminRoleName implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         /** @var \App\Models\Admin $user */
-        $user = Auth::user();
+        $user = auth('admin')->user();
 
         if ($user->role === AdminRoleEnum::ADMIN->value) {
             /** @var Builder<Role> $roleQuery */
