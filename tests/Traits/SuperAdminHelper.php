@@ -22,8 +22,11 @@ trait SuperAdminHelper
         create_permissions($defaultAdminPermissions, $adminRole);
 
         $admin = Admin::factory()->create([
+            'email' => 'superadmin@test.com',
             'role_id' => $adminRole->id,
             'role' => AdminRoleEnum::ADMIN->value,
+            'created_by' => null,
+            'updated_by' => null,
         ]);
 
         $admin->assignRole($adminRole);

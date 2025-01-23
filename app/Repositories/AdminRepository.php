@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Enums\AdminRoleEnum;
 use App\Interfaces\AdminInterface;
 use App\Interfaces\RoleInterface;
 use App\Models\Admin;
@@ -22,7 +23,7 @@ final class AdminRepository implements AdminInterface
      */
     public function get(array $select = ['id', 'fist_name', 'last_name', 'email', 'role', 'created_at'], array $filters = [], bool $paginate = true): LengthAwarePaginator|Collection
     {
-        $query = Admin::select($select);
+        $query = Admin::with('permissions')->select($select);
         $recordPerPage = filter_var(config('utility.record_per_page', 10), FILTER_VALIDATE_INT) ?: 10;
 
         $admins = app(Pipeline::class)
@@ -56,7 +57,14 @@ final class AdminRepository implements AdminInterface
     {
         $attributes['password'] = generatePassword(Admin::ADMIN_DEFAULT_PASSWORD);
 
-        $admin = Admin::create($attributes);
+        $admin = Admin::create([
+            'first_name' => $attributes['first_name'],
+            'last_name' => $attributes['last_name'],
+            'email' => $attributes['email'],
+            'password' => bcrypt($attributes['password']),
+            'role' => AdminRoleEnum::ADMIN->value,
+            'role_id' => $attributes['role_id'],
+        ]);
 
         $permissions = is_array($attributes['custom_permissions']) ? $attributes['custom_permissions'] : [];
         $admin->syncPermissions($permissions);
