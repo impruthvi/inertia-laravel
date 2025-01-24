@@ -7,8 +7,6 @@ use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\SuperAdminHelper;
 
-use function Pest\Laravel\get;
-
 uses(RefreshDatabase::class)->group('admin', 'roles');
 uses(SuperAdminHelper::class);
 
@@ -17,7 +15,7 @@ beforeEach(function () {
 });
 
 test('redirects to login when accessing admin create page without credentials', function () {
-    get(route('admin.admins.create'))
+    $this->get(route('admin.admins.create'))
         ->assertRedirectToRoute('login');
 });
 
