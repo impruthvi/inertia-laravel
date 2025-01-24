@@ -38,10 +38,16 @@ test('shows error when required fields are missing on admin create', function ()
     $this->actingAs($this->superAdmin, 'admin')
         ->post(route('admin.admins.store'), [])
         ->assertRedirect()
-        ->assertSessionHasErrors(['first_name', 'last_name', 'email', 'role_id', 'custom_permission']);
+        ->assertSessionHasErrors([
+            'first_name',
+            'last_name',
+            'email',
+            'role_id',
+            'custom_permission',
+        ]);
 });
 
-test('successfully creates a admin with valid data', function () {
+test('successfully creates an admin with valid data', function () {
     $role = Role::factory()->create();
 
     $this->actingAs($this->superAdmin, 'admin')
