@@ -27,6 +27,13 @@ test('allows super admin to access the create admin page', function () {
         ->assertOk();
 });
 
+test('allows super admin to access the create admin page with existing role selected', function () {
+    $role = Role::factory()->create();
+    $this->actingAs($this->superAdmin, 'admin')
+        ->get(route('admin.admins.create',['role' => $role->id]))
+        ->assertOk();
+});
+
 test('shows error when required fields are missing on admin create', function () {
     $this->actingAs($this->superAdmin, 'admin')
         ->post(route('admin.admins.store'), [])
