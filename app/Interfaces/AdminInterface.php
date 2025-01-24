@@ -30,7 +30,7 @@ interface AdminInterface
     /**
      * @param  array<string, mixed>  $attributes
      */
-    public function update(string $id, array $attributes): bool;
+    public function update(Admin $admin, array $attributes): bool;
 
     public function delete(string $id): bool;
 }

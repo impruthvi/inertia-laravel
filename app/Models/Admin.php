@@ -128,15 +128,6 @@ final class Admin extends Authenticatable
 
     /**
      * @param  Builder<Admin>  $query
-     * @return Builder<Admin>
-     */
-    public function scopeExcludeSuperRole(Builder $query): Builder
-    {
-        return $query->whereNotIn('name', [Role::SUPER_ADMIN]);
-    }
-
-    /**
-     * @param  Builder<Admin>  $query
      */
     public function scopeVisibility(Builder $query): void
     {

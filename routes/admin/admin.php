@@ -15,7 +15,7 @@ Route::prefix('admin')->middleware('auth:admin')->as('admin.')->group(function (
     Route::resource('roles', RoleController::class)->except('show');
 
     // Admin routes
-    Route::resource('admins', AdminController::class);
+    Route::resource('admins', AdminController::class)->except('show');
 });
 
 require __DIR__.'/auth.php';

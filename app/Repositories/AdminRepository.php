@@ -75,10 +75,8 @@ final class AdminRepository implements AdminInterface
     /**
      * @param  array<string, mixed>  $attributes
      */
-    public function update(string $id, array $attributes): bool
+    public function update(Admin $admin, array $attributes): bool
     {
-        $admin = Admin::findOrFail($id);
-
         $role = app(RoleInterface::class)->find((string) $admin->role_id);
 
         if ($role) {
@@ -106,13 +104,10 @@ final class AdminRepository implements AdminInterface
     {
         $firstName = $attributes['first_name'] ?? $admin->first_name;
         $lastName = $attributes['last_name'] ?? $admin->last_name;
-        // TODO: Change the name field to nullable in the database
-        $name = 'WILL CHANGE NULLABLE';
 
         return [
             'first_name' => $firstName,
             'last_name' => $lastName,
-            'name' => $name,
             'email' => $attributes['email'] ?? $admin->email,
         ];
     }

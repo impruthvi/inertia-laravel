@@ -98,17 +98,9 @@ final class AdminController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id): void
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, string $id): Response
+    public function edit(Request $request, string $id): Response| RedirectResponse
     {
         $this->authorize(get_ability('edit'));
 
@@ -118,6 +110,10 @@ final class AdminController extends Controller
         );
 
         $admin = $this->adminInterface->find($id);
+
+        if (! $admin instanceof \App\Models\Admin) {
+            return redirect()->back()->with('error', trans('messages.not_found', ['entity' => 'Admin']));
+        }
 
         /**
          * @var \App\Models\Admin $user
@@ -148,23 +144,27 @@ final class AdminController extends Controller
         $this->authorize(get_ability('edit'));
 
         /**
-         * @var \App\Models\Admin $user
+         * @var \App\Models\Admin|null $user
          */
         $user = $this->adminInterface->find($id);
 
+        if (! $user instanceof \App\Models\Admin) {
+            return redirect()->back()->with('error', trans('messages.not_found', ['entity' => 'Admin']));
+        }
+
         // Ensure the condition is only true when comparing the correct properties
         if (
-            $user->id === Auth::id() &&
+            $user->id === auth('admin')->id() &&
             // @phpstan-ignore-next-line
             ($user->role_id !== $request->role_id || ($user->custom_permission ?? null) !== $request->validated()['custom_permission'])
         ) {
-            return redirect()->back()->with('error', 'You cannot change your own role or permissions');
+            return redirect()->back()->with('error', trans('messages.cant_change_own'));
         }
 
         // Update the user
-        $this->adminInterface->update((string) $user->id, $request->validated());
+        $this->adminInterface->update($user, $request->validated());
 
-        return redirect()->back()->with('success', 'Admin updated successfully');
+        return redirect()->back()->with('success', trans('messages.updated', ['entity' => 'Admin']));
     }
 
     /**
