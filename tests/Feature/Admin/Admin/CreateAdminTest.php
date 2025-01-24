@@ -30,7 +30,7 @@ test('allows super admin to access the create admin page', function () {
 test('allows super admin to access the create admin page with existing role selected', function () {
     $role = Role::factory()->create();
     $this->actingAs($this->superAdmin, 'admin')
-        ->get(route('admin.admins.create',['role' => $role->id]))
+        ->get(route('admin.admins.create', ['role' => $role->id]))
         ->assertOk();
 });
 

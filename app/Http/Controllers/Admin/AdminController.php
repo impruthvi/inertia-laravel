@@ -10,7 +10,6 @@ use App\Interfaces\AdminInterface;
 use App\Interfaces\RoleInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -100,7 +99,7 @@ final class AdminController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, string $id): Response| RedirectResponse
+    public function edit(Request $request, string $id): Response|RedirectResponse
     {
         $this->authorize(get_ability('edit'));
 

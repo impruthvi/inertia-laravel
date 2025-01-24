@@ -59,15 +59,14 @@ test('allows admin to access the admin edit page with valid credentials', functi
         ->get(route('admin.admins.edit', $admin->id))
         ->assertOk()
         ->assertInertia(
-            fn(AssertableInertia $page) => $page->has(
+            fn (AssertableInertia $page) => $page->has(
                 'admin',
-                fn($roleData) => $roleData->where('id', $admin->id)
+                fn ($roleData) => $roleData->where('id', $admin->id)
                     ->where('first_name', 'New Admin')
                     ->etc()
             )
         );
 });
-
 
 test('allows admin to access the admin edit page with existing role', function () {
 
@@ -78,9 +77,9 @@ test('allows admin to access the admin edit page with existing role', function (
         ->get(route('admin.admins.edit', [$admin->id, 'role' => $role->id]))
         ->assertOk()
         ->assertInertia(
-            fn(AssertableInertia $page) => $page->has(
+            fn (AssertableInertia $page) => $page->has(
                 'admin',
-                fn($roleData) => $roleData->where('id', $admin->id)
+                fn ($roleData) => $roleData->where('id', $admin->id)
                     ->where('first_name', 'New Admin')
                     ->etc()
             )
@@ -132,8 +131,6 @@ test('updates admin successfully with valid data', function () {
 
     expect(Admin::where('first_name', 'Updated Admin')->exists())->toBeTrue();
 });
-
-
 
 test('shows admin not found when updating a non-existent admin', function () {
 

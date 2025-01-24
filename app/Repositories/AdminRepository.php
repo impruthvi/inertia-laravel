@@ -35,7 +35,7 @@ final class AdminRepository implements AdminInterface
             ->thenReturn();
 
         /** @var \Illuminate\Database\Eloquent\Builder<Admin> $admins */
-        $admins->excludeSuperRole()->visibility();
+        $admins->visibility();
 
         return $paginate
             ? $admins->paginate($recordPerPage)->appends($filters)
