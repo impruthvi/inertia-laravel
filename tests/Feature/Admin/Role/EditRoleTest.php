@@ -20,7 +20,7 @@ function createTestRole($admin): Role
 {
     actingAs($admin, 'admin')->post(
         route('admin.roles.store'),
-        ['role_display_name' => 'Testing Role', 'roles' => [1 => ['add', 'edit', 'view', 'delete']]]
+        ['display_name' => 'Testing Role', 'roles' => [1 => ['add', 'edit', 'view', 'delete']]]
     );
 
     return Role::latest()->first();
@@ -96,5 +96,5 @@ test('deletes a role successfully', function () {
         ->assertSessionHas('success', __('messages.deleted', ['entity' => 'Role']))
         ->assertSessionDoesntHaveErrors();
 
-    expect(Role::where('display_name', 'Testing Role')->doesntExist())->toBeTrue();
+    expect(Role::where('id', $role->id)->doesntExist())->toBeTrue();
 });
