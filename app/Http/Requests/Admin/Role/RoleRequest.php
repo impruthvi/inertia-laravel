@@ -91,15 +91,14 @@ final class RoleRequest extends FormRequest
     /**
      * Get the role name of the authenticated user.
      */
+    /**
+     * Get the role name of the authenticated user.
+     */
     private function getRoleName(): string
     {
-        /** @var \App\Models\Admin $user */
-        $user = auth('admin')->user();
+        /** @var \App\Models\Admin $auth */
+        $auth = auth('admin')->user();
 
-        if (property_exists($user, 'role') && $user->role !== null) {
-            return (string) $user->role;
-        }
-
-        return AdminRoleEnum::ADMIN->value;
+        return AdminRoleEnum::tryFrom($auth->role)->value;
     }
 }
