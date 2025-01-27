@@ -92,7 +92,7 @@ test('shows user not found when updating a non-existent user', function () {
 
 test('deletes a user successfully', function () {
 
-    $user = createTestRole($this->superAdmin);
+    $user = createTestUser($this->superAdmin);
 
     actingAs($this->superAdmin, 'admin')
         ->delete(route('admin.users.destroy', $user->id))
