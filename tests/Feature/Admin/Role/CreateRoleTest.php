@@ -43,3 +43,19 @@ test('successfully creates a role with valid data', function () {
     expect(Role::count())->toBe(2)
         ->and(Role::where('display_name', 'Testing Role')->exists())->toBeTrue();
 });
+
+test("same admin can't create role with same display name", function () {
+
+    Role::factory()->for($this->superAdmin, 'createdBy')->create(['display_name' => 'Testing Role']);
+
+    $this->actingAs($this->superAdmin, 'admin')
+        ->post(route('admin.roles.store'), [
+            'display_name' => 'Testing Role',
+            'roles' => [1 => ['add', 'edit', 'view', 'delete']],
+        ])
+        ->assertRedirect()
+        ->assertSessionHasErrors(['display_name']);
+
+    expect(Role::count())->toBe(2)
+        ->and(Role::where('display_name', 'Testing Role')->count())->toBe(1);
+});
