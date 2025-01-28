@@ -20,11 +20,13 @@ final class RoleRepository implements RoleInterface
     /**
      * @param  array<int, string>  $select
      * @param  array<string, mixed>  $filters
-     * @param  bool  $paginate
      * @return LengthAwarePaginator<Role>|Collection<int, Role>
      */
-    public function get(array $select = ['id', 'name', 'display_name', 'guard_name', 'portal', 'is_common_role'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection
-    {
+    public function get(
+        array $select = ['id', 'name', 'display_name', 'guard_name', 'portal', 'is_common_role'],
+        array $filters = [],
+        bool $paginate = true
+    ): LengthAwarePaginator|Collection {
         // Start building the query
         $query = Role::select($select);
         $record_per_page = filter_var(config('utility.record_per_page', 10), FILTER_VALIDATE_INT) ?: 10;

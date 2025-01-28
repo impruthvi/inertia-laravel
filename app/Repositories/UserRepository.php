@@ -17,10 +17,9 @@ final class UserRepository implements UserInterface
     /**
      * @param  array<int, string>  $select
      * @param  array<string, mixed>  $filters
-     * @param  bool  $paginate
      * @return LengthAwarePaginator<User>|Collection<int, User>
      */
-    public function get(array $select = ['id', 'name', 'email', 'created_at'], array $filters = [], $paginate = true): LengthAwarePaginator|Collection
+    public function get(array $select = ['id', 'name', 'email', 'created_at'], array $filters = [], bool $paginate = true): LengthAwarePaginator|Collection
     {
         // Start building the query
         $query = User::select($select);

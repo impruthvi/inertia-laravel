@@ -30,7 +30,7 @@ final class SearchPipeline
             : null;
 
         if ($search_keyword !== null && $search_keyword !== '' && $search_keyword !== '0') {
-            $roles->where(function ($q) use ($search_keyword): void {
+            $roles->where(function (Builder $q) use ($search_keyword): void {
                 // Perform the search query
                 $q->where('display_name', 'like', '%'.$search_keyword.'%');
             });

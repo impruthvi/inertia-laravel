@@ -29,6 +29,7 @@
         "peckphp/peck": "^0.1.1",
         "pestphp/pest": "^3.7",
         "pestphp/pest-plugin-laravel": "^3.0",
+        "pestphp/pest-plugin-type-coverage": "^3.2",
         "rector/rector": "^2.0"
     },
     "autoload": {
@@ -76,7 +77,9 @@
         "test:types": "phpstan",
         "test:refactor": "rector --dry-run",
         "test": [
+            "@test:type-coverage",
             "@test:typos",
+            "@test:unit",
             "@test:lint",
             "@test:types",
             "@test:refactor"

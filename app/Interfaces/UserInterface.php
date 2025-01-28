@@ -15,11 +15,7 @@ interface UserInterface
      * @param  array<string, mixed>  $filters
      * @return LengthAwarePaginator<User>|Collection<int, User>
      */
-    public function get(
-        array $select = [],
-        array $filters = [],
-        bool $paginate = true
-    ): LengthAwarePaginator|Collection;
+    public function get(array $select = ['id', 'name', 'display_name', 'guard_name', 'portal', 'is_common_role'], array $filters = [], bool $paginate = true): LengthAwarePaginator|Collection;
 
     /**
      * @param  array<int, string>  $select

@@ -23,12 +23,12 @@ interface AdminInterface
     public function find(string $id, array $select = []): ?Admin;
 
     /**
-     * @param  array<string, mixed>  $attributes
+     * @param  array<mixed>  $attributes
      */
     public function store(array $attributes): Admin;
 
     /**
-     * @param  array<string, mixed>  $attributes
+     * @param  array<mixed>  $attributes
      */
     public function update(Admin $admin, array $attributes): bool;
 

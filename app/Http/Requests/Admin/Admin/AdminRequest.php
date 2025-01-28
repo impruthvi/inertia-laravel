@@ -47,7 +47,13 @@ final class AdminRequest extends FormRequest
         ];
     }
 
-    public function validated($key = null, $default = null)
+    /**
+     * Get the validated data from the request.
+     *
+     *
+     * @return array<mixed>
+     */
+    public function validated(mixed $key = null, mixed $default = null): array
     {
         /**
          * @var \App\Models\Admin $user

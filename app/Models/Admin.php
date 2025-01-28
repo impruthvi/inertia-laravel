@@ -121,7 +121,7 @@ final class Admin extends Authenticatable
     /**
      * @return array<mixed>
      */
-    public function getCustomPermissionsAttribute()
+    public function getCustomPermissionsAttribute(): array
     {
         return $this->permissions->pluck('name')->toArray();
     }
