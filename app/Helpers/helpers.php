@@ -96,7 +96,7 @@ if (! function_exists('role_permissions')) {
     function role_permissions(string $role = 'admin'): array
     {
         // Example: Check if role is valid or matches a known role type
-        $validRoles = ['admin']; // Add more roles as necessary
+        $validRoles = ['admin', 'super_admin']; // Add more roles as necessary
 
         // If the role is not valid, return an empty array
         if (! in_array($role, $validRoles, true)) {
@@ -106,6 +106,7 @@ if (! function_exists('role_permissions')) {
         // Return permissions based on role
         return match ($role) {
             'admin' => admin_roles(),
+            'super_admin' => admin_roles(),
         };
     }
 }
@@ -139,7 +140,6 @@ if (! function_exists('permission_to_array')) {
 
         $roles_array = [];
         $rolePermissions = collect(role_permissions($role));
-
         foreach ($permissions as $permission) {
             $parts = explode('_', $permission);
             if (count($parts) !== 2) {

@@ -25,7 +25,7 @@ final class AdminSeeder extends Seeder
             'first_name' => 'Test',
             'last_name' => 'Admin',
             'email' => 'admin@test.com',
-            'role' => AdminRoleEnum::ADMIN->value,
+            'role' => AdminRoleEnum::SUPER_ADMIN->value,
             'password' => bcrypt('admin-123'),
             'role_id' => $adminRole->id,
         ]);

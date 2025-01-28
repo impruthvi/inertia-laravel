@@ -61,7 +61,7 @@ final class AdminRepository implements AdminInterface
             'first_name' => $attributes['first_name'],
             'last_name' => $attributes['last_name'],
             'email' => $attributes['email'],
-            'password' => bcrypt($attributes['password']),
+            'password' => ($attributes['password']),
             'role' => AdminRoleEnum::ADMIN->value,
             'role_id' => $attributes['role_id'],
         ]);

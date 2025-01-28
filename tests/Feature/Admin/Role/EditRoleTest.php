@@ -51,7 +51,7 @@ test('allows admin to access the role edit page with valid credentials', functio
             fn (AssertableInertia $page) => $page->has(
                 'role',
                 fn ($roleData) => $roleData->where('id', $role->id)
-                    ->where('display_name', 'super_admin')
+                    ->where('display_name', $role->display_name)
                     ->etc()
             )
         );
