@@ -127,7 +127,7 @@ final class Admin extends Authenticatable
     }
 
     /**
-     * @param  Builder<Admin>  $query
+     * @param  Builder<Admin> $query
      */
     public function scopeVisibility(Builder $query): void
     {
@@ -137,7 +137,10 @@ final class Admin extends Authenticatable
             $query->whereHas('createdBy', function (Builder $query): void {
                 $query->where('role', AdminRoleEnum::ADMIN->value);
             });
+
+            $query->where('id', '!=', $user->id);
         }
+
     }
 
     /**
