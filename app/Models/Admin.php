@@ -131,16 +131,16 @@ final class Admin extends Authenticatable
      */
     public function scopeVisibility(Builder $query): void
     {
+        /** @var Admin */
         $user = auth('admin')->user();
 
-        if ($user instanceof self && $user->role === AdminRoleEnum::ADMIN->value) {
+        if ($user->role === AdminRoleEnum::ADMIN->value) {
             $query->whereHas('createdBy', function (Builder $query): void {
                 $query->where('role', AdminRoleEnum::ADMIN->value);
             });
-
-            $query->where('id', '!=', $user->id);
         }
 
+        $query->where('id', '!=', $user->id);
     }
 
     /**
