@@ -16,7 +16,6 @@ import {
 import { useEditUserModal } from "../hooks/use-edit-user-modal";
 import { useConfirm } from "@/hooks/use-confirm";
 import { router, usePage } from "@inertiajs/react";
-import { toast } from "sonner";
 import { HasAbility } from "@/Components/HasAbility";
 
 interface TaskActionsProps {
@@ -39,9 +38,6 @@ export const UserActions = ({ id, children }: TaskActionsProps) => {
 
         router.delete(route("admin.users.destroy", id), {
             preserveScroll: true,
-            onSuccess: () => {
-                toast.success("User deleted successfully");
-            },
         });
     };
 

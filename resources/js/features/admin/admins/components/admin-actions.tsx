@@ -10,7 +10,6 @@ import {
 } from "@/Components/ui/dropdown-menu";
 import { useConfirm } from "@/hooks/use-confirm";
 import { router, usePage } from "@inertiajs/react";
-import { toast } from "sonner";
 import { HasAbility } from "@/Components/HasAbility";
 
 interface AdminActionsProps {
@@ -32,9 +31,6 @@ export const AdminActions = ({ id, children }: AdminActionsProps) => {
 
         router.delete(route("admin.admins.destroy", id), {
             preserveScroll: true,
-            onSuccess: () => {
-                toast.success("Admin deleted successfully");
-            },
         });
     };
 

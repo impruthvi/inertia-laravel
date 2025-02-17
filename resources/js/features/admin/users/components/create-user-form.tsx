@@ -11,7 +11,6 @@ import { useForm } from "@inertiajs/react";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
-import { toast } from "sonner";
 
 interface CreateUserFormProps {
     onCancel?: () => void;
@@ -30,11 +29,8 @@ export const CreateUserForm = ({ onCancel }: CreateUserFormProps) => {
             onSuccess: () => {
                 reset();
                 onCancel && onCancel();
-                toast.success("User created successfully");
+               
             },
-            onError: () => {
-                toast.error("Failed to create user");
-            }
         });
     };
 

@@ -13,7 +13,7 @@ import {
 } from "@/Components/ui/dropdown-menu";
 import { useConfirm } from "@/hooks/use-confirm";
 import { router, usePage } from "@inertiajs/react";
-import { toast } from "sonner";
+
 import { HasAbility } from "@/Components/HasAbility";
 
 interface RoleActionsProps {
@@ -35,9 +35,6 @@ export const RoleActions = ({ id, children }: RoleActionsProps) => {
 
         router.delete(route("admin.roles.destroy", id), {
             preserveScroll: true,
-            onSuccess: () => {
-                toast.success("Role deleted successfully");
-            },
         });
     };
 

@@ -3,10 +3,28 @@ import { Sidebar } from "@/Components/Sidebar";
 import { CreateUserModal } from "@/features/admin/users/components/create-user-modal";
 import { EditUserModal } from "@/features/admin/users/components/edit-user-modal";
 import { PropsWithChildren, ReactNode } from "react";
+import { useEffect } from "react";
+import { usePage } from "@inertiajs/react";
+import { PageProps } from "@/types";
+import { toast } from "sonner";
 
 export default function AdminAuthenticated({
     children,
 }: PropsWithChildren<{ children: ReactNode }>) {
+    const { flash, errors } = usePage<PageProps>().props;
+    const formErrors = Object.keys(errors).length;
+
+    useEffect(() => {
+        if (flash.success) {
+            toast.success(flash.success);
+        }
+        if (flash.error) {
+            toast.error(flash.error);
+        }
+        if (formErrors > 0) {
+            toast.error("There are " + formErrors + " form errors.");
+        }
+    }, [flash, errors]);
     return (
         <div className="min-h-screen">
             <CreateUserModal />

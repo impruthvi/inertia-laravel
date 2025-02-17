@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import AdminAuthenticatedLayout from "@/Layouts/Admin/AdminAuthenticatedLayout";
 import { DottedSeparator } from "@/Components/DottedSeparator";
-import { toast } from "sonner";
 import { SaveRoleButton } from "@/features/admin/roles/components/SaveRoleButton";
 import { RolePermissionsTable } from "@/features/admin/roles/components/RolePermissionsTable";
 import {
@@ -86,7 +85,6 @@ export default function CreateAdmin({
             preserveScroll: true,
             onSuccess: () => {
                 reset();
-                toast.success("Admin created successfully");
             },
         });
     };

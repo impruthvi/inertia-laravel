@@ -23,6 +23,10 @@ export type PageProps<
             [key: string]: string | string[] | object | undefined;
         };
     };
+    flash: {
+        success: string | null;
+        error: string | null;
+    };
 };
 
 export type PaginatedData<T> = {

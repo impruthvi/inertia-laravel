@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import AdminAuthenticatedLayout from "@/Layouts/Admin/AdminAuthenticatedLayout";
 import { DottedSeparator } from "@/Components/DottedSeparator";
-import { toast } from "sonner";
 import { SaveRoleButton } from "@/features/admin/roles/components/SaveRoleButton";
 import { RolePermissionsTable } from "@/features/admin/roles/components/RolePermissionsTable";
 import {
@@ -87,9 +86,6 @@ export default function UpdateAdmin({
     const handleSubmit = () => {
         put(route("admin.admins.update", admin.id), {
             preserveScroll: true,
-            onSuccess: () => {
-                toast.success("Admin updated successfully");
-            },
         });
     };
 

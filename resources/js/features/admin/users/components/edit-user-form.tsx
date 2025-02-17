@@ -12,7 +12,6 @@ import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import { User } from "@/types";
-import { toast } from "sonner";
 
 interface EditUserFormProps {
     onCancel?: () => void;
@@ -32,11 +31,7 @@ export const EditUserForm = ({ onCancel,initialValues }: EditUserFormProps) => {
             onSuccess: () => {
                 reset();
                 onCancel && onCancel();
-                toast.success("User updated successfully");
             },
-            onError: () => {
-                toast.error("Failed to update user");
-            }
         });
     };
 

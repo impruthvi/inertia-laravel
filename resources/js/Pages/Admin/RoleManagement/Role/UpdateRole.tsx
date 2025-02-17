@@ -1,7 +1,6 @@
 import { Head, usePage } from "@inertiajs/react";
 import AdminAuthenticatedLayout from "@/Layouts/Admin/AdminAuthenticatedLayout";
 import { DottedSeparator } from "@/Components/DottedSeparator";
-import { toast } from "sonner";
 import { RoleNameInput } from "@/features/admin/roles/components/RoleNameInput";
 import { SaveRoleButton } from "@/features/admin/roles/components/SaveRoleButton";
 import { RolePermissionsTable } from "@/features/admin/roles/components/RolePermissionsTable";
@@ -62,9 +61,6 @@ export default function UpdateRole({
     const onSubmit = () => {
         put(route("admin.roles.update", role.id), {
             preserveScroll: true,
-            onSuccess: () => {
-                toast.success("Role updated successfully");
-            },
         });
     };
 
