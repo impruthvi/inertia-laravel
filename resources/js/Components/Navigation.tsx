@@ -22,45 +22,47 @@ export const Navigation = ({ user }: NavigationProps) => {
 
                     const Icon = isActive ? item.activeIcon : item.icon;
 
-                    return (
-                        <HasAbility
-                            key={item.route}
-                            user={user}
-                            checkFull={item.permission}
-                        >
-                            <li>
-                                <Link
-                                    href={route(item.route)}
-                                    className="block"
-                                    aria-current={isActive ? "page" : undefined}
+                    const navItem = (
+                        <li key={item.route}>
+                            <Link
+                                href={route(item.route)}
+                                className="block"
+                                aria-current={isActive ? "page" : undefined}
+                            >
+                                <div
+                                    className={cn(
+                                        "flex items-center gap-2.5 p-2.5 rounded-md",
+                                        "font-medium transition-colors duration-200",
+                                        "hover:bg-white hover:text-primary hover:shadow-sm",
+                                        "text-neutral-500",
+                                        isActive && [
+                                            "bg-white",
+                                            "shadow-sm",
+                                            "text-primary",
+                                            "hover:bg-white/90",
+                                        ]
+                                    )}
                                 >
-                                    <div
+                                    <Icon
                                         className={cn(
-                                            "flex items-center gap-2.5 p-2.5 rounded-md",
-                                            "font-medium transition-colors duration-200",
-                                            "hover:bg-white hover:text-primary hover:shadow-sm",
-                                            "text-neutral-500",
-                                            isActive && [
-                                                "bg-white",
-                                                "shadow-sm",
-                                                "text-primary",
-                                                "hover:bg-white/90",
-                                            ]
+                                            "w-5 h-5",
+                                            isActive
+                                                ? "text-primary"
+                                                : "text-neutral-500"
                                         )}
-                                    >
-                                        <Icon
-                                            className={cn(
-                                                "w-5 h-5",
-                                                isActive
-                                                    ? "text-primary"
-                                                    : "text-neutral-500"
-                                            )}
-                                            aria-hidden="true"
-                                        />
-                                        <span>{item.label}</span>
-                                    </div>
-                                </Link>
-                            </li>
+                                        aria-hidden="true"
+                                    />
+                                    <span>{item.label}</span>
+                                </div>
+                            </Link>
+                        </li>
+                    );
+
+                    return item.ignorePermission ? (
+                        navItem
+                    ) : (
+                        <HasAbility user={user} checkFull={item.permission}>
+                            {navItem}
                         </HasAbility>
                     );
                 })}
@@ -68,5 +70,3 @@ export const Navigation = ({ user }: NavigationProps) => {
         </nav>
     );
 };
-
-export default Navigation;

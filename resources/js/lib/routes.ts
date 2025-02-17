@@ -8,6 +8,7 @@ interface Route {
     activeIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     permission: string;
     matchRoutes?: string[]; // Additional routes to match for active state
+    ignorePermission?: boolean; // Ignore permission check
 }
 
 export const routes: Route[] = [
@@ -16,7 +17,8 @@ export const routes: Route[] = [
         route: "admin.dashboard",
         icon: GoHome,
         activeIcon: GoHomeFill,
-        permission: "access_users",
+        permission: "",
+        ignorePermission: true, 
     },
     {
         label: "Users",
